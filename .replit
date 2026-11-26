@@ -1,5 +1,35 @@
+modules = ["nodejs-24", "python-base-3.13"]
 [nix]
 channel = "stable-25_05"
+packages = ["chromium", "php", "ruby"]
 
 [agent]
 expertMode = true
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Lodearink documentation"
+
+[[workflows.workflow]]
+name = "Lodearink documentation"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 5000
+externalPort = 80

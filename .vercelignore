@@ -1,0 +1,12 @@
+.git/
+.local/
+.agents/
+.cache/
+attached_assets/
+scripts/
+tests/
+generated-artifacts/
+node_modules/
+Ff.test
+replit.md
+.replit
