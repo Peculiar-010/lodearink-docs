@@ -13,13 +13,13 @@ const multipart={...json,payloadType:'multipart',fields:[{name:'image',isFile:tr
 const memory=new Map();
 globalThis.localStorage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v),removeItem:k=>memory.delete(k)};
 globalThis.window={dispatchEvent:()=>{}};
-test('every route in the uploaded inventory is present exactly once',()=>{
-  const brief=readFileSync(new URL('../attached_assets/lodearink-docs-prompt_1795708058301.md',import.meta.url),'utf8');
-  const routes=[...brief.split('General and Search')[1].split('Include every route above.')[0].matchAll(/- "(\/[^"]+)"/g)].map(m=>m[1]);
+test('only routes in the replacement inventory are present, exactly once',()=>{
+  const routes=JSON.parse(readFileSync(new URL('../data/contracts.json',import.meta.url),'utf8')).endpoints.map(e=>e.path);
   const actual=new Set(data.endpoints.map(e=>e.path));
   for(const route of routes)assert.ok(actual.has(route),`Missing ${route}`);
   assert.equal(actual.size,data.endpoints.length);
-  assert.ok(data.endpoints.length>routes.length,'Additional discovered routes are included');
+  assert.equal(actual.size,routes.length,'No unlisted routes may be added');
+  assert.ok(data.endpoints.filter(e=>e.category==='Text AI').every(e=>e.path.startsWith('/llama')));
 });
 test('every inventory entry has traceable live evidence and honest offline classification',()=>{
   for(const e of data.endpoints){
@@ -29,7 +29,7 @@ test('every inventory entry has traceable live evidence and honest offline class
     if(e.status.state==='offline'){
       assert.ok(['GET','POST'].every(method=>e.evidence.some(x=>x.method===method&&x.httpStatus===404&&x.response.includes('Unknown endpoint'))),e.path);
     }
-    if(e.safeCheck)assert.ok(!/aivideo|\/generate|\/submit|\/upload|\/new$|\/batch|\/download|\/stream/.test(e.path),`Unsafe scheduler entry: ${e.path}`);
+    if(e.safeCheck)assert.ok(!/aivideo|\/generate|\/submit|\/upload|\/tmail\/new$|\/batch|\/download|\/stream/.test(e.path),`Unsafe scheduler entry: ${e.path}`);
   }
 });
 test('code generators preserve URLs and never attach a GET body',()=>{

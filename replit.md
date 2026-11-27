@@ -1,40 +1,44 @@
 # Lodearink API documentation
 
-Public, framework-free documentation and a real API playground. Application code is HTML, CSS, and vanilla JavaScript modules. No login, build step, frontend package dependency, API key, or database is required.
+Public, framework-free documentation and an API playground. Browser code is HTML, CSS, and vanilla JavaScript modules with no runtime frontend dependencies, login, API key, or database.
 
 ## Run on Replit
 
-Use the **Lodearink documentation** workflow. It runs `npm run dev`, which serves the static project with Python’s standard-library HTTP server on `0.0.0.0:5000`. Open the web preview. The server is development tooling, not an application backend. JavaScript modules must be served over HTTP, not opened as `file://`.
+Use the **Lodearink documentation** workflow. `npm run dev` builds static pages and sharing PNGs into ignored `dist/`, then serves clean URLs using Python’s standard library on `0.0.0.0:5000`. The server is development tooling, not an application backend. Run `npm run build` after changing source files; restart the workflow after a coherent batch.
 
 ## Live API and discovery
 
 The external API is `https://api.lodearink.name.ng`. This project does not change it. Browser requests go directly to that origin; its health response permits cross-origin GET and POST with Content-Type. Other/custom headers may be rejected by CORS. No arbitrary proxy or authentication bypass is provided.
 
-The uploaded brief and the live health directory are combined into `data/catalog.json`. Every listed route is retained, including absent or unresolved routes. Probe evidence records timestamps, method, full URL, request body, HTTP status, content type, duration, and actual response snippets. Snippets are limited to 5,000 characters. Successful probes do not prove all optional parameters or every method.
+The maintainer's replacement list is authoritative: `data/contracts.json` contains exactly the provided concrete routes and formats. `data/catalog.json` adds live evidence. **Do not add routes from health/directory responses or expand generic MODEL_SLUG examples. Llama is the only text-model service.** Group services by purpose (Text AI, Vision AI, Social Downloaders, etc.). Keep public copy for developers; never address the site owner or refer to their brief.
 
-To deliberately rerun discovery: `python scripts/discover.py`, then `python scripts/refine_discovery.py`, then `python scripts/verify_contracts.py`. These make real external requests, including small generation tests and upload tests when configured. Do not run them on a schedule or without intending upstream work. Temporary probe files use the OS temporary directory. Python urllib was blocked by the upstream’s bot filter; probes use curl instead.
+To deliberately retest this inventory: `npm run discover` (`python scripts/update_catalog.py`). This makes real external requests, including generation and file uploads; do not schedule it or run it unintentionally. `--resume` reuses a local checkpoint from an interrupted run. `--spec PATH` replaces the source contracts from a new maintainer file. Legacy discovery scripts are historical and must not overwrite the restricted inventory. Temporary files use the OS temporary directory; resumable output stays in ignored `generated-artifacts/`. Probes use curl because the API's bot filter blocked Python urllib.
+
+Evidence contains actual request inputs, timestamps, HTTP status, duration, content type and response snippets limited to 5,000 characters. Secret-like response fields are redacted. A successful health/service directory is not proof that its operation works. Validate actual operations with real image/video inputs and returned resource IDs. Requiredness is not invented when the contract does not specify it.
 
 Automatic browser checks only use recorded successful, inexpensive GET samples, cache results for ten minutes, avoid generation/upload/download/mutation, and limit scheduled status checks to six per ten minutes. Unknown and validation-needed are not Offline. Offline means both GET and POST received explicit unknown-route responses; it is a timestamped observation, not a permanent claim.
 
 ## Test
 
-`npm test` runs Node’s standard test runner for request generation, all requested routes, evidence validity, and storage/import safety. Native syntax checks require Bash, Node, Python, PHP, Ruby, and Go. PHP and Ruby are configured as development tools in `.replit`; Go is available through the Replit toolchain.
+`npm run build && npm test` checks exact inventory scope, request generation, evidence validity, storage/import safety, clean routes, task follow-ups and crawler-readable metadata/PNG dimensions for every page. Native syntax checks require Bash, Node, Python, PHP, Ruby and Go; PHP and Ruby are configured in `.replit`, and Go is available through the Replit toolchain.
 
-`node tests/browser.mjs` runs Chromium interactions against the development preview, using the development-only Playwright dependency and system Chromium. It checks all 265 reference pages, every category, keyboard search, editable queries and headers, all code tabs, real GET and POST transmission, actual upstream errors, saved-request CRUD/persistence, import/export, multipart file selection, all 18 guides, status filtering, and mobile navigation/overflow.
+`node tests/browser.mjs` exercises the running preview with Playwright/system Chromium: reference routes, groups, search, editors, code examples, real GET/POST calls, a real video task follow-up, saved-request CRUD/persistence, import/export, uploads, guides, status and mobile layouts. This deliberately calls the external API, including one small video generation.
 
-The live vision POST returned HTTP 500 in the final browser run despite returning HTTP 200 during discovery. The test verifies the actual status/body is displayed rather than manufacturing a success. Static snapshot badges remain timestamped; browser tests update that browser’s local status cache.
+Tests assert the actual upstream status/body, not an assumed success. Static badges and sharing images are timestamped snapshots. Browser results override the built snapshot only when newer. Task cards fill returned IDs/status URLs and send follow-up requests on click; runtime status URLs do not add services to the public inventory.
 
 ## Deploy as a static Vercel site
 
 1. Import this repository into Vercel.
-2. Choose **Other** as the framework preset. Use the repository root, no build command, and `.` as the output directory. No environment variables are needed.
-3. `vercel.json` supplies static output and basic security/cache headers. `.vercelignore` excludes source briefs, screenshots, development scripts, tests, and workspace internals.
-4. Deploy a preview. Verify `/`, `/docs.html`, `/playground.html`, `/status.html`, `/guides.html`, `/changelog.html`, and an invalid route’s 404 page. Send a GET `/health`, a query search, and the observed POST vision request.
+2. Choose **Other** as the framework preset. Build command: `npm run build`. Output directory: `dist`. Node installs the build-time SVG rasterizer; browser code remains framework-free. No environment variables are needed.
+3. `vercel.json` enables clean URLs and security/cache headers. `.vercelignore` retains required build scripts and fonts while excluding attachments, tests, generated files and workspace internals.
+4. Verify `/`, `/docs`, `/playground`, `/status`, `/guides`, `/changelog`, `/docs/visionai/qwen/analyze`, its sharing PNG, and an invalid route's 404 page. Legacy `.html` links redirect to clean URLs.
 5. Add **docs.lodearink.name.ng** in this Vercel project’s Domains settings. Apply only the DNS record Vercel supplies for the **docs** subdomain.
 6. Do not change the root domain or any DNS/configuration for **api.lodearink.name.ng**. It remains the existing API service.
 7. Confirm HTTPS and CORS from the deployed docs origin. Browser console failures may be network/CORS restrictions; compare against the generated cURL request.
 
 No production deployment or DNS change has been performed by the development setup.
+
+`site.config.json` specifies the intended canonical docs domain supplied by the maintainer, not proof of deployment. Set it to the actual public docs origin before publishing elsewhere. The static build emits HTML metadata, 1200×630 PNG sharing cards, `sitemap.xml` and `robots.txt`. Rebuild after retesting to refresh sharing status/timestamps. Bundled DejaVu fonts make build rendering deterministic; their license is in `assets/fonts/`.
 
 ## Local browser storage
 

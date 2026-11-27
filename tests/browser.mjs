@@ -12,19 +12,19 @@ const es=JSON.parse(readFileSync('data/catalog.json','utf8')).endpoints;
 const check=async(name,fn)=>{await fn();console.log('PASS',name);};
 try {
   await check('all main pages load without runtime errors',async()=>{
-    for(const path of ['/','/docs.html','/playground.html','/status.html','/guides.html','/changelog.html','/404.html']){
+    for(const path of ['/','/docs','/playground','/status','/guides','/changelog','/404']){
       const res=await page.goto(base+path,{waitUntil:'networkidle'});assert.equal(res.status(),200);
       await page.waitForSelector('.header');assert.ok(await page.locator('main').innerText());
     }
   });
   await check('all endpoint detail pages and categories render real catalog data',async()=>{
-    await page.goto(base+'/docs.html',{waitUntil:'networkidle'});
+    await page.goto(base+'/docs',{waitUntil:'networkidle'});
     const observed=await page.evaluate(paths=>{
       let n=0;
       for(const path of paths){
-        history.replaceState({},'',`docs.html?endpoint=${encodeURIComponent(path)}`);
+        history.replaceState({},'','/docs'+path.replaceAll(':',''));
         window.dispatchEvent(new PopStateEvent('popstate'));
-        if(!document.querySelector('#endpoint-detail').innerText.includes('Discovery evidence'))throw Error(path);
+        if(!document.querySelector('#endpoint-detail .detail-path').textContent.includes(path))throw Error(path);
         if(!document.querySelector('#endpoint-detail .request-url').textContent.startsWith('https://api.lodearink.name.ng/'))throw Error(path);
         n++;
       }
@@ -37,12 +37,12 @@ try {
   });
   await check('global search opens by keyboard and follows a result',async()=>{
     await page.keyboard.press('Control+k');await page.fill('.search-overlay input','/health');
-    await page.locator('.search-result').first().click();await page.waitForURL(/endpoint=/);
-    await page.waitForFunction(()=>document.querySelector('#endpoint-detail')?.textContent.includes('General and Search'));
-    assert.ok((await page.locator('#endpoint-detail').textContent()).includes('General and Search'));
+    await page.locator('.search-result').first().click();await page.waitForURL(/\/docs\/health/);
+    await page.waitForFunction(()=>document.querySelector('#endpoint-detail')?.textContent.includes('Overview'));
+    assert.ok((await page.locator('#endpoint-detail').textContent()).includes('Overview'));
   });
   await check('GET query edits, repeated names, removal and all language tabs stay synchronized',async()=>{
-    await page.goto(base+'/playground.html?endpoint=%2Fsearch',{waitUntil:'networkidle'});
+    await page.goto(base+'/playground/search',{waitUntil:'networkidle'});
     await page.locator('#query-editor [data-key="value"]').first().fill('Ada Lovelace & Alan');
     assert.ok((await page.inputValue('#request-url')).includes('Ada+Lovelace+%26+Alan'));
     await page.click('#add-parameter');await page.locator('#query-editor [data-key="name"]').last().fill('limit');await page.locator('#query-editor [data-key="value"]').last().fill('2');
@@ -52,14 +52,15 @@ try {
     await page.click('#reset-request');
   });
   await check('real GET request is executed from the browser',async()=>{
-    await page.goto(base+'/playground.html?endpoint=%2Fhealth',{waitUntil:'networkidle'});
+    await page.goto(base+'/playground/health',{waitUntil:'networkidle'});
     await page.click('#send-request');await page.waitForFunction(()=>document.querySelector('#response-meta').textContent.includes('HTTP') || document.querySelector('#request-error').textContent,{timeout:65000});
     assert.ok((await page.locator('#response-meta').innerText()).includes('HTTP 200'),await page.locator('#request-error').innerText());
     assert.ok((await page.locator('#response-viewer').innerText()).includes('operational'));
     await page.click('[data-response-tab="headers"]');assert.ok((await page.locator('#response-content').innerText()).includes('content-type'));
   });
   await check('real POST request and response rendering work',async()=>{
-    await page.goto(base+'/playground.html?endpoint=%2Fvisionai%2Fqwen%2Fcaption',{waitUntil:'networkidle'});
+    await page.goto(base+'/playground/visionai/qwen/caption',{waitUntil:'networkidle'});
+    await page.selectOption('#request-method','POST');
     assert.equal(await page.inputValue('#request-method'),'POST');
     const responsePromise=page.waitForResponse(r=>r.url().startsWith('https://api.lodearink.name.ng/visionai/qwen/caption')&&r.request().method()==='POST',{timeout:65000});
     await page.click('#send-request');
@@ -67,9 +68,25 @@ try {
     await page.waitForFunction(()=>document.querySelector('#response-meta').textContent.includes('HTTP') || document.querySelector('#request-error').textContent,{timeout:65000});
     assert.ok((await page.locator('#response-meta').innerText()).includes(`HTTP ${actualResponse.status()}`),await page.locator('#request-error').innerText());
     assert.ok(/caption|error/.test(await page.locator('#response-content').innerText()));
-    assert.ok(actualResponse.request().postData().includes('image_url'));
+    assert.ok(JSON.parse(actualResponse.request().postData()).image.startsWith('https://'));
     console.log(`INFO live vision POST returned HTTP ${actualResponse.status()}; the UI displayed its real body.`);
     await page.click('[data-response-tab="raw"]');assert.ok(await page.locator('#response-content pre').textContent());
+  });
+  await check('a real video task can be checked without copying its ID',async()=>{
+    await page.goto(base+'/playground/aivideo/wan',{waitUntil:'networkidle'});
+    await page.click('#send-request');
+    await page.waitForSelector('#check-task',{timeout:65000});
+    const id=await page.locator('.task-card>code').textContent();
+    assert.ok(id.length>10);
+    const statusResponse=page.waitForResponse(r=>r.url().includes('/aivideo/wan/status?')&&r.url().includes(encodeURIComponent(id)),{timeout:65000});
+    await page.click('#check-task');
+    const response=await statusResponse;
+    await page.waitForSelector('#response-content pre',{timeout:65000});
+    assert.ok((await page.inputValue('#request-url')).includes(encodeURIComponent(id)));
+    assert.equal(new URL(await page.inputValue('#request-url')).pathname,'/aivideo/wan/status');
+    assert.ok((await page.locator('#response-meta').textContent()).includes('HTTP '+response.status()));
+    mkdirSync('generated-artifacts',{recursive:true});
+    await page.screenshot({path:'generated-artifacts/task-flow.jpg',fullPage:true});
   });
   await check('saved request CRUD, import/export and persistence work',async()=>{
     page.once('dialog',d=>d.accept('Browser saved request'));await page.click('#save-request');
@@ -86,25 +103,25 @@ try {
     await page.click('#copy-code');assert.ok((await page.evaluate(()=>navigator.clipboard.readText())).includes('api.lodearink.name.ng'));
   });
   await check('multipart upload editor updates generated file code',async()=>{
-    await page.goto(base+'/playground.html?endpoint=%2Fupload%2Fimage',{waitUntil:'networkidle'});
+    await page.goto(base+'/playground/upload/image',{waitUntil:'networkidle'});
     await page.selectOption('#request-method','POST');await page.click('[data-editor="body"]');await page.selectOption('#body-type','multipart');
-    await page.click('#add-field');await page.locator('[data-field-key="name"]').fill('image');await page.selectOption('[data-field-key="isFile"]','file');
+    assert.equal(await page.locator('[data-field-key="name"]').inputValue(),'file');
     await page.locator('[data-field-file]').setInputFiles({name:'tiny.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aN1kAAAAASUVORK5CYII=','base64')});
     assert.ok((await page.locator('#generated-code').innerText()).includes('tiny.png'));
     assert.ok((await page.locator('#generated-code').innerText()).includes('--form'));
     await page.click('[data-remove-field]');assert.equal(await page.locator('.multipart-row').count(),0);
   });
   await check('all eighteen guides, changelog, status filters and mobile navigation work',async()=>{
-    await page.goto(base+'/guides.html',{waitUntil:'networkidle'});
+    await page.goto(base+'/guides',{waitUntil:'networkidle'});
     const hashes=await page.locator('#guides-root .guide-card').evaluateAll(links=>links.map(a=>a.hash));assert.equal(hashes.length,18);
     for(const hash of hashes){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector('.guide-body');assert.ok((await page.locator('.guide-body').innerText()).length>100);}
-    await page.goto(base+'/status.html',{waitUntil:'networkidle'});await page.selectOption('#status-filter','offline');
+    await page.goto(base+'/status',{waitUntil:'networkidle'});await page.selectOption('#status-filter','offline');
     assert.ok(await page.locator('.status-row').count());assert.equal(await page.locator('.status-row .badge:not(.badge-offline)').count(),0);
     await page.setViewportSize({width:390,height:844});
-    for(const path of ['/','/docs.html','/playground.html','/status.html','/guides.html','/changelog.html']){
+    for(const path of ['/','/docs','/docs/visionai/qwen/analyze','/playground','/playground/visionai/qwen/analyze','/status','/guides','/changelog']){
       await page.goto(base+path,{waitUntil:'networkidle'});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`Horizontal overflow at ${path}`);
     }
-    await page.click('[data-mobile-toggle]');assert.equal(await page.locator('[data-mobile-toggle]').getAttribute('aria-expanded'),'true');await page.locator('[data-mobile-menu] a[href="./docs.html"]').click();await page.waitForURL(/docs.html/);
+    await page.click('[data-mobile-toggle]');assert.equal(await page.locator('[data-mobile-toggle]').getAttribute('aria-expanded'),'true');await page.locator('[data-mobile-menu] a[href="/docs"]').click();await page.waitForURL(/\/docs$/);
   });
 } catch(error) {
   console.error(error);process.exitCode=1;

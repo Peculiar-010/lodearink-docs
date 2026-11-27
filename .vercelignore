@@ -3,10 +3,9 @@
 .agents/
 .cache/
 attached_assets/
-scripts/
 tests/
 generated-artifacts/
+dist/
 node_modules/
-Ff.test
 replit.md
 .replit

@@ -1,0 +1,2867 @@
+{
+  "version": 2,
+  "endpoints": [
+    {
+      "path": "/health",
+      "service": "Health",
+      "category": "Overview",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/search",
+      "service": "Wikipedia",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "query": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/bulktext/search",
+      "service": "Wikipedia",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "query": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/images/search",
+      "service": "Wikipedia",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "query": "",
+            "count": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/image/proxy",
+      "service": "Wikipedia",
+      "category": "Media Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/tiktok/download",
+      "service": "Tiktok",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/aiov2",
+      "service": "Aio All In One Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": "https://www.youtube.com/watch?v=Wi-HjAXdKoA"
+          }
+        }
+      }
+    },
+    {
+      "path": "/aio",
+      "service": "Aio All In One Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": "https://www.youtube.com/watch?v=Wi-HjAXdKoA"
+          }
+        }
+      }
+    },
+    {
+      "path": "/tts",
+      "service": "Tts",
+      "category": "Audio & Music",
+      "requests": {
+        "GET": {
+          "query": {
+            "text": "",
+            "voice": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "text": "Hello world",
+            "voice": "voice-1"
+          }
+        }
+      }
+    },
+    {
+      "path": "/speak",
+      "service": "Tts",
+      "category": "Audio & Music",
+      "requests": {
+        "GET": {
+          "query": {
+            "text": "",
+            "voice": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "text": "Hello world",
+            "voice": "voice-1"
+          }
+        }
+      }
+    },
+    {
+      "path": "/tts/voices",
+      "service": "Tts",
+      "category": "Audio & Music",
+      "requests": {
+        "GET": {
+          "query": {
+            "language": "",
+            "gender": "",
+            "country": "",
+            "q": "",
+            "limit": "",
+            "offset": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/tts/voices/search",
+      "service": "Tts",
+      "category": "Audio & Music",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/tts/languages",
+      "service": "Tts",
+      "category": "Audio & Music",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/llama/chat",
+      "service": "Llama",
+      "category": "Text AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Hello"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "/llama/ask",
+      "service": "Llama",
+      "category": "Text AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Explain JavaScript"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "/llama/v1/chat/completions",
+      "service": "Llama",
+      "category": "Text AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Hello"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "/llama/v1/models",
+      "service": "Llama",
+      "category": "Text AI",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/aivideo/wan",
+      "service": "Wan Video",
+      "category": "Video AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "prompt": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/aivideo/wan/status",
+      "service": "Wan Video",
+      "category": "Video AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "task_id": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/anime/images",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": "",
+            "series": "",
+            "character": "",
+            "page": "",
+            "limit": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/anime/random",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": "",
+            "series": "",
+            "character": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/anime/random.json",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": "",
+            "series": "",
+            "character": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/anime/search",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": "",
+            "page": "",
+            "limit": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/anime/catalog",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": "",
+            "series": "",
+            "character": "",
+            "page": "",
+            "limit": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/anime/catalog/all",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/anime/characters",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/anime/characters/all",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/anime/series",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/anime/series/all",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/anime/bulk",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {
+            "slugs": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "slugs": [
+              "naruto",
+              "luffy"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "/anime/zip",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {
+            "slugs": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/anime/image/:slug",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/anime/download/:slug",
+      "service": "Anime",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/movie/titles",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/movie/search",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/movie/random",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/movie/random.json",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/movie/poster/:path",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/movie/download/:slug",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/movie/scenes",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/movie/scenes/random",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/movie/tv",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/movie/tv/:id",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/movie/tv/:id/episodes",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/movie/zip",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/movie/zip/scenes",
+      "service": "Movie Infos",
+      "category": "Entertainment",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/bing/images",
+      "service": "Bing Images",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": "",
+            "limit": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/bing/images/random",
+      "service": "Bing Images",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/bing/images/random.json",
+      "service": "Bing Images",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/bing/images/zip",
+      "service": "Bing Images",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": "",
+            "limit": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/bing/web",
+      "service": "Bing Web",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/bing/web/top",
+      "service": "Bing Web",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/bing/web/links",
+      "service": "Bing Web",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/bing/web/titles",
+      "service": "Bing Web",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/bing/web/snippets",
+      "service": "Bing Web",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/bing/web/summary",
+      "service": "Bing Web",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/removebg/v1/remove",
+      "service": "Background Removal",
+      "category": "Media Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "multipart",
+          "fields": [
+            {
+              "name": "file",
+              "value": "image.png",
+              "isFile": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "/removebg/v1/image",
+      "service": "Background Removal",
+      "category": "Media Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/removebg/v2/remove",
+      "service": "Background Removal",
+      "category": "Media Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "multipart",
+          "fields": [
+            {
+              "name": "file",
+              "value": "image.png",
+              "isFile": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "/removebg/v2/replace",
+      "service": "Background Removal",
+      "category": "Media Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": "",
+            "color": ""
+          }
+        },
+        "POST": {
+          "query": {
+            "color": "FF0000"
+          },
+          "payloadType": "multipart",
+          "fields": [
+            {
+              "name": "file",
+              "value": "image.png",
+              "isFile": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "/removebg/v2/sticker",
+      "service": "Background Removal",
+      "category": "Media Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "multipart",
+          "fields": [
+            {
+              "name": "file",
+              "value": "image.png",
+              "isFile": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "/ytsearch",
+      "service": "Youtube Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ytsearch/video",
+      "service": "Youtube Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ytsearch/random",
+      "service": "Youtube Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/ytsearch/thumb",
+      "service": "Youtube Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ytsearch/links",
+      "service": "Youtube Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ytsearch/titles",
+      "service": "Youtube Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ytsearch/channel",
+      "service": "Youtube Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/spotsearch",
+      "service": "Spotify Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/spotsearch/song",
+      "service": "Spotify Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/spotsearch/random",
+      "service": "Spotify Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/spotsearch/cover",
+      "service": "Spotify Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/spotsearch/links",
+      "service": "Spotify Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/spotsearch/titles",
+      "service": "Spotify Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/spotsearch/artist",
+      "service": "Spotify Search",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ytdl/info",
+      "service": "Youtube Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ytdl/url",
+      "service": "Youtube Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": "",
+            "format": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ytdl/stream",
+      "service": "Youtube Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": "",
+            "format": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ytdl/download",
+      "service": "Youtube Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": "",
+            "format": "mp3"
+          }
+        }
+      }
+    },
+    {
+      "path": "/ytdl/thumb",
+      "service": "Youtube Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": "",
+            "quality": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ytdl/search",
+      "service": "Youtube Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ytdl/batch",
+      "service": "Youtube Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "urls": "",
+            "format": "mp3"
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "urls": [
+              "https://www.youtube.com/watch?v=VIDEO_ID"
+            ],
+            "format": "mp3"
+          }
+        }
+      }
+    },
+    {
+      "path": "/spdl/info",
+      "service": "Spotify Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/spdl/preview",
+      "service": "Spotify Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/spdl/match",
+      "service": "Spotify Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": "",
+            "limit": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/spdl/url",
+      "service": "Spotify Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": "",
+            "format": "mp3"
+          }
+        }
+      }
+    },
+    {
+      "path": "/spdl/stream",
+      "service": "Spotify Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": "",
+            "format": "mp3"
+          }
+        }
+      }
+    },
+    {
+      "path": "/spdl/download",
+      "service": "Spotify Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": "",
+            "format": "mp3"
+          }
+        }
+      }
+    },
+    {
+      "path": "/spdl/batch",
+      "service": "Spotify Downloader",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "urls": "",
+            "format": "mp3"
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "urls": [
+              "https://open.spotify.com/track/TRACK_ID"
+            ],
+            "format": "mp3"
+          }
+        }
+      }
+    },
+    {
+      "path": "/football/leagues",
+      "service": "Football Live Stat",
+      "category": "Sports",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/football/scoreboard",
+      "service": "Football Live Stat",
+      "category": "Sports",
+      "requests": {
+        "GET": {
+          "query": {
+            "league": "premier-league"
+          }
+        }
+      }
+    },
+    {
+      "path": "/football/live",
+      "service": "Football Live Stat",
+      "category": "Sports",
+      "requests": {
+        "GET": {
+          "query": {
+            "league": "premier-league"
+          }
+        }
+      }
+    },
+    {
+      "path": "/football/upcoming",
+      "service": "Football Live Stat",
+      "category": "Sports",
+      "requests": {
+        "GET": {
+          "query": {
+            "league": "premier-league",
+            "days": "7"
+          }
+        }
+      }
+    },
+    {
+      "path": "/football/standings",
+      "service": "Football Live Stat",
+      "category": "Sports",
+      "requests": {
+        "GET": {
+          "query": {
+            "league": "premier-league"
+          }
+        }
+      }
+    },
+    {
+      "path": "/football/teams",
+      "service": "Football Live Stat",
+      "category": "Sports",
+      "requests": {
+        "GET": {
+          "query": {
+            "league": "premier-league"
+          }
+        }
+      }
+    },
+    {
+      "path": "/football/team",
+      "service": "Football Live Stat",
+      "category": "Sports",
+      "requests": {
+        "GET": {
+          "query": {
+            "id": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/football/match",
+      "service": "Football Live Stat",
+      "category": "Sports",
+      "requests": {
+        "GET": {
+          "query": {
+            "league": "",
+            "id": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/football/search",
+      "service": "Football Live Stat",
+      "category": "Sports",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/football/bundesliga",
+      "service": "Football Live Stat",
+      "category": "Sports",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/hn/top",
+      "service": "Hacker News",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "limit": "10"
+          }
+        }
+      }
+    },
+    {
+      "path": "/hn/new",
+      "service": "Hacker News",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "limit": "10"
+          }
+        }
+      }
+    },
+    {
+      "path": "/hn/best",
+      "service": "Hacker News",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "limit": "10"
+          }
+        }
+      }
+    },
+    {
+      "path": "/hn/ask",
+      "service": "Hacker News",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "limit": "10"
+          }
+        }
+      }
+    },
+    {
+      "path": "/hn/show",
+      "service": "Hacker News",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "limit": "10"
+          }
+        }
+      }
+    },
+    {
+      "path": "/hn/job",
+      "service": "Hacker News",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "limit": "10"
+          }
+        }
+      }
+    },
+    {
+      "path": "/hn/item",
+      "service": "Hacker News",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "id": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/hn/user",
+      "service": "Hacker News",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "id": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/hn/comments",
+      "service": "Hacker News",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "id": "",
+            "limit": "20"
+          }
+        }
+      }
+    },
+    {
+      "path": "/github/repos",
+      "service": "Github",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/github/users",
+      "service": "Github",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/github/repo",
+      "service": "Github",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "owner": "",
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/github/user",
+      "service": "Github",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/github/trending",
+      "service": "Github",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "language": "python",
+            "since": "daily"
+          }
+        }
+      }
+    },
+    {
+      "path": "/github/readme",
+      "service": "Github",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "owner": "",
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/qwen/analyze",
+      "service": "Qwen Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "image": "",
+            "prompt": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "image": "https://example.com/image.jpg",
+            "prompt": "Describe this image"
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/qwen/describe",
+      "service": "Qwen Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "image": "",
+            "detail": "standard"
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "image": "https://example.com/image.jpg",
+            "detail": "detailed"
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/qwen/caption",
+      "service": "Qwen Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "image": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "image": "https://example.com/image.jpg"
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/qwen/ocr",
+      "service": "Qwen Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "image": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "image": "https://example.com/image.jpg"
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/qwen/tags",
+      "service": "Qwen Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "image": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "image": "https://example.com/image.jpg"
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/qwen/compare",
+      "service": "Qwen Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "images": "url1,url2",
+            "prompt": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "images": [
+              "https://example.com/one.jpg",
+              "https://example.com/two.jpg"
+            ],
+            "prompt": "Compare these images"
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/qwen/batch",
+      "service": "Qwen Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "items": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "items": [
+              {
+                "image": "https://example.com/image.jpg",
+                "prompt": "Describe this image"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/nemotron/analyze",
+      "service": "Nemotron Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "image": "",
+            "prompt": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "image": "https://example.com/image.jpg",
+            "prompt": "Describe this image"
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/nemotron/describe",
+      "service": "Nemotron Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "image": "https://i.ibb.co/V07DrJhG/image-1795678603774.jpg",
+            "detail": "what can you see"
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "image": "https://example.com/image.jpg",
+            "detail": "detailed"
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/nemotron/caption",
+      "service": "Nemotron Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "image": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "image": "https://example.com/image.jpg"
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/nemotron/ocr",
+      "service": "Nemotron Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "image": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "image": "https://example.com/image.jpg"
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/nemotron/tags",
+      "service": "Nemotron Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "image": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "image": "https://example.com/image.jpg"
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/nemotron/compare",
+      "service": "Nemotron Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "images": "url1,url2",
+            "prompt": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "images": [
+              "https://example.com/one.jpg",
+              "https://example.com/two.jpg"
+            ],
+            "prompt": "Compare these images"
+          }
+        }
+      }
+    },
+    {
+      "path": "/visionai/nemotron/batch",
+      "service": "Nemotron Vision",
+      "category": "Vision AI",
+      "requests": {
+        "GET": {
+          "query": {
+            "items": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "items": [
+              {
+                "image": "https://example.com/image.jpg",
+                "prompt": "Describe this image"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "/whatsapp-channel",
+      "service": "Whatsapp",
+      "category": "Utilities",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/whatsapp-channel/health",
+      "service": "Whatsapp",
+      "category": "Utilities",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/whatsapp-group",
+      "service": "Whatsapp",
+      "category": "Utilities",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/whatsapp-group/health",
+      "service": "Whatsapp",
+      "category": "Utilities",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/pinterest/search",
+      "service": "Pinterest",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/pinterest/download",
+      "service": "Pinterest",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ig/profile",
+      "service": "Instagram",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "username": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ig/avatar",
+      "service": "Instagram",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "username": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ig/info",
+      "service": "Instagram",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/ig/download",
+      "service": "Instagram",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/fb/info",
+      "service": "Facebook",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "url": "https://www.facebook.com/watch/?v=VIDEO_ID"
+          }
+        }
+      }
+    },
+    {
+      "path": "/fb/download",
+      "service": "Facebook",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "url": "https://www.facebook.com/watch/?v=VIDEO_ID"
+          }
+        }
+      }
+    },
+    {
+      "path": "/twitter/info",
+      "service": "Twitter / X",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "url": "https://x.com/USER/status/POST_ID"
+          }
+        }
+      }
+    },
+    {
+      "path": "/twitter/download",
+      "service": "Twitter / X",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "url": "https://x.com/USER/status/POST_ID"
+          }
+        }
+      }
+    },
+    {
+      "path": "/reddit/post",
+      "service": "Reddit",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/reddit/download",
+      "service": "Reddit",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/reddit/video",
+      "service": "Reddit",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/reddit/gallery",
+      "service": "Reddit",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/reddit/search",
+      "service": "Reddit",
+      "category": "Search",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": "",
+            "subreddit": "",
+            "sort": "",
+            "limit": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/reddit/r/:subreddit",
+      "service": "Reddit",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "sort": "",
+            "limit": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/reddit/r/:subreddit/random",
+      "service": "Reddit",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/mediafire/download",
+      "service": "Mediafire",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/uptodown/search",
+      "service": "Uptodown",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/uptodown/info",
+      "service": "Uptodown",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/uptodown/versions",
+      "service": "Uptodown",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/uptodown/download",
+      "service": "Uptodown",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/playstore/search",
+      "service": "Play Store",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/playstore/detail",
+      "service": "Play Store",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "id": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/playstore/app",
+      "service": "Play Store",
+      "category": "Social Downloaders",
+      "requests": {
+        "GET": {
+          "query": {
+            "id": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/videobg",
+      "service": "Video Background Removal",
+      "category": "Media Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/videobg/status",
+      "service": "Video Background Removal",
+      "category": "Media Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "task_id": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/music/generate",
+      "service": "Music",
+      "category": "Audio & Music",
+      "requests": {
+        "GET": {
+          "query": {
+            "prompt": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/lyricsdb/lyrics",
+      "service": "Lyrics",
+      "category": "Audio & Music",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/lyricsdb/tracks",
+      "service": "Lyrics",
+      "category": "Audio & Music",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/lyricsdb/stream",
+      "service": "Lyrics",
+      "category": "Audio & Music",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/lyricfind/search",
+      "service": "Lyrics",
+      "category": "Audio & Music",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/lyricfind/charts",
+      "service": "Lyrics",
+      "category": "Audio & Music",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/lyricfind/artist",
+      "service": "Lyrics",
+      "category": "Audio & Music",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/upload/image",
+      "service": "Uploads",
+      "category": "Uploads",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "multipart",
+          "fields": [
+            {
+              "name": "file",
+              "value": "image.png",
+              "isFile": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "/upload/image/url",
+      "service": "Uploads",
+      "category": "Uploads",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/upload/video",
+      "service": "Uploads",
+      "category": "Uploads",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/upload/audio",
+      "service": "Uploads",
+      "category": "Uploads",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/upload/file",
+      "service": "Uploads",
+      "category": "Uploads",
+      "requests": {
+        "GET": {
+          "query": {
+            "url": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/pypi/package",
+      "service": "Pypi",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/pypi/latest",
+      "service": "Pypi",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/pypi/versions",
+      "service": "Pypi",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/pypi/releases",
+      "service": "Pypi",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": "",
+            "limit": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/pypi/files",
+      "service": "Pypi",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": "",
+            "version": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/pypi/deps",
+      "service": "Pypi",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/pypi/changelog",
+      "service": "Pypi",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/npm/package",
+      "service": "Npm",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/npm/latest",
+      "service": "Npm",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/npm/versions",
+      "service": "Npm",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/npm/search",
+      "service": "Npm",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "q": "",
+            "limit": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/npm/downloads",
+      "service": "Npm",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": "",
+            "period": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/npm/deps",
+      "service": "Npm",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/npm/readme",
+      "service": "Npm",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/npm/maintainers",
+      "service": "Npm",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {
+            "name": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/tmail/new",
+      "service": "Temporary Email",
+      "category": "Utilities",
+      "requests": {
+        "GET": {
+          "query": {}
+        },
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "domains": [
+              "gemail.pk"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "/tmail/check",
+      "service": "Temporary Email",
+      "category": "Utilities",
+      "requests": {
+        "GET": {
+          "query": {
+            "email": "",
+            "latest": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/tmail/otp",
+      "service": "Temporary Email",
+      "category": "Utilities",
+      "requests": {
+        "GET": {
+          "query": {
+            "email": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/tmail/links",
+      "service": "Temporary Email",
+      "category": "Utilities",
+      "requests": {
+        "GET": {
+          "query": {
+            "email": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "/tmail/domains",
+      "service": "Temporary Email",
+      "category": "Utilities",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/image/generate",
+      "service": "Image Generation",
+      "category": "Image AI",
+      "requests": {
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "prompt": "A beautiful sunset",
+            "width": 1024,
+            "height": 1024
+          }
+        }
+      }
+    },
+    {
+      "path": "/img",
+      "service": "Image Generation",
+      "category": "Image AI",
+      "requests": {
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "prompt": "A beautiful sunset"
+          }
+        }
+      }
+    },
+    {
+      "path": "/bg/remove",
+      "service": "Background Removal",
+      "category": "Media Tools",
+      "requests": {
+        "POST": {
+          "query": {},
+          "payloadType": "multipart",
+          "fields": [
+            {
+              "name": "file",
+              "value": "image.png",
+              "isFile": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "/bg/replace",
+      "service": "Background Removal",
+      "category": "Media Tools",
+      "requests": {
+        "POST": {
+          "query": {
+            "color": "FF0000"
+          },
+          "payloadType": "multipart",
+          "fields": [
+            {
+              "name": "file",
+              "value": "image.png",
+              "isFile": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "/bg/sticker",
+      "service": "Background Removal",
+      "category": "Media Tools",
+      "requests": {
+        "POST": {
+          "query": {},
+          "payloadType": "multipart",
+          "fields": [
+            {
+              "name": "file",
+              "value": "image.png",
+              "isFile": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "/image/flux/generate",
+      "service": "Flux Image Generation",
+      "category": "Image AI",
+      "requests": {
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "prompt": "A futuristic city",
+            "ratio": "16:9"
+          }
+        }
+      }
+    },
+    {
+      "path": "/image/flux/submit",
+      "service": "Flux Image Generation",
+      "category": "Image AI",
+      "requests": {
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "prompt": "A futuristic city",
+            "ratio": "16:9"
+          }
+        }
+      }
+    },
+    {
+      "path": "/image/z-turbo/generate",
+      "service": "Z-Image Turbo",
+      "category": "Image AI",
+      "requests": {
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "prompt": "A futuristic city",
+            "ratio": "16:9"
+          }
+        }
+      }
+    },
+    {
+      "path": "/image/z-turbo/submit",
+      "service": "Z-Image Turbo",
+      "category": "Image AI",
+      "requests": {
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "prompt": "A futuristic city",
+            "ratio": "16:9"
+          }
+        }
+      }
+    },
+    {
+      "path": "/image/upscale",
+      "service": "Image Upscaler",
+      "category": "Media Tools",
+      "requests": {
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "url": "https://example.com/image.jpg",
+            "scale": 2,
+            "enhance": true
+          }
+        }
+      }
+    },
+    {
+      "path": "/web2apk/build",
+      "service": "Ai Model Chat",
+      "category": "Developer Tools",
+      "requests": {
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "url": "https://example.com",
+            "appName": "My Website",
+            "packageName": "com.example.mywebsite",
+            "versionName": "1.0.0",
+            "versionCode": 1,
+            "outputFormat": "apk",
+            "splashType": "default",
+            "orientation": "auto",
+            "icon_url": "https://example.com/icon.png"
+          },
+          "alternatives": [
+            {
+              "query": {},
+              "payloadType": "multipart",
+              "fields": [
+                {
+                  "name": "url",
+                  "value": "https://example.com",
+                  "isFile": false
+                },
+                {
+                  "name": "appName",
+                  "value": "My Website",
+                  "isFile": false
+                },
+                {
+                  "name": "packageName",
+                  "value": "com.example.mywebsite",
+                  "isFile": false
+                },
+                {
+                  "name": "versionName",
+                  "value": "1.0.0",
+                  "isFile": false
+                },
+                {
+                  "name": "versionCode",
+                  "value": "1",
+                  "isFile": false
+                },
+                {
+                  "name": "outputFormat",
+                  "value": "apk",
+                  "isFile": false
+                },
+                {
+                  "name": "splashType",
+                  "value": "default",
+                  "isFile": false
+                },
+                {
+                  "name": "orientation",
+                  "value": "auto",
+                  "isFile": false
+                },
+                {
+                  "name": "icon",
+                  "value": "/path/to/icon.png",
+                  "isFile": true
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "/web2apk/health",
+      "service": "Service Information",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/web2apk/register",
+      "service": "Register And Verify A New Account",
+      "category": "Developer Tools",
+      "requests": {
+        "POST": {
+          "query": {},
+          "payloadType": "raw"
+        }
+      }
+    },
+    {
+      "path": "/web2apk/history",
+      "service": "Build History",
+      "category": "Developer Tools",
+      "requests": {
+        "GET": {
+          "query": {}
+        }
+      }
+    },
+    {
+      "path": "/web2apk/scrape-html",
+      "service": "Scrape Website Html",
+      "category": "Developer Tools",
+      "requests": {
+        "POST": {
+          "query": {},
+          "payloadType": "json",
+          "body": {
+            "url": "https://example.com"
+          }
+        }
+      }
+    }
+  ]
+}

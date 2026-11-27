@@ -1,15 +1,18 @@
 import {BASE_URL} from './catalog.js';
 import {updateStore, readStore} from './storage.js';
-export function classifyResult(status, data) {
+export function classifyResult(status, data, path='') {
   if (status === 0 || status === 403) return 'unknown';
   if ([400, 405, 422].includes(status)) return 'requires-parameters';
   if (status === 404) return 'unknown';
   if (status >= 500 || status === 429 || status === 401) return 'degraded';
-  if (status >= 200 && status < 300) return data && typeof data === 'object' && (data.ok === false || data.success === false || data.error) ? 'degraded' : 'online';
+  if (status >= 200 && status < 400) return data && typeof data === 'object' && (data.ok === false || data.success === false || data.status === false || data.error || data.endpoints&&!path.endsWith('/health')) ? 'degraded' : 'online';
   return 'degraded';
 }
 export function endpointStatus(endpoint) {
-  try { return readStore().statuses[endpoint.path] || endpoint.status; }
+  try {
+    const cached=readStore().statuses[endpoint.path];
+    return cached&&Date.parse(cached.checkedAt)>Date.parse(endpoint.status.checkedAt)?cached:endpoint.status;
+  }
   catch { return endpoint.status; }
 }
 export function storeStatus(path, state, note, httpStatus) {
@@ -86,7 +89,7 @@ export async function checkEndpoint(endpoint, {force = false} = {}) {
     try {
       const {exampleRequest} = await import('./catalog.js');
       const result = await executeRequest(exampleRequest(endpoint), {signal: controller.signal});
-      return storeStatus(endpoint.path, classifyResult(result.status, result.data), `Live browser probe: HTTP ${result.status}.`, result.status);
+      return storeStatus(endpoint.path, classifyResult(result.status, result.data,endpoint.path), `HTTP ${result.status}`, result.status);
     } catch (error) {
       return storeStatus(endpoint.path, 'unknown', `Browser check failed: ${error.message}. This may be a CORS or network issue, not an offline API.`, 0);
     } finally { clearTimeout(timer); inFlight.delete(endpoint.path); }

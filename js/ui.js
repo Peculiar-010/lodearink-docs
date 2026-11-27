@@ -1,14 +1,18 @@
-import { endpoints, categories } from "./catalog.js";
+import { endpoints, endpointLink } from "/js/catalog.js";
 
 const favicon = document.createElement('link');
 favicon.rel = 'icon';
 favicon.type = 'image/svg+xml';
-favicon.href = './favicon.svg';
+favicon.href = '/favicon.svg';
 document.head.append(favicon);
 const workspaceStyles = document.createElement('link');
 workspaceStyles.rel = 'stylesheet';
-workspaceStyles.href = './css/workspace.css';
+workspaceStyles.href = '/css/workspace.css';
 document.head.append(workspaceStyles);
+const refinementStyles = document.createElement('link');
+refinementStyles.rel = 'stylesheet';
+refinementStyles.href = '/css/refinement.css';
+document.head.append(refinementStyles);
 
 const icons = {
   search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
@@ -61,19 +65,26 @@ export function formatTime(iso) {
 }
 
 const navItems = [
-  ["Overview","./"], ["API reference","./docs.html"], ["Playground","./playground.html"],
-  ["Guides","./guides.html"], ["Status","./status.html"]
+  ["Overview","/"], ["API reference","/docs"], ["Playground","/playground"],
+  ["Guides","/guides"], ["Status","/status"]
 ];
 function currentPage() {
-  const path = location.pathname.split("/").pop() || "index.html";
-  return path === "" ? "index.html" : path;
+  const path = location.pathname.replace(/\/+$/, "") || "/";
+  if (path === "/" || path === "/index.html") return "/";
+  if (path === "/docs" || path === "/docs.html" || path.startsWith("/docs/")) return "/docs";
+  if (path === "/playground" || path === "/playground.html" || path.startsWith("/playground/")) return "/playground";
+  if (path === "/status" || path === "/status.html") return "/status";
+  if (path === "/guides" || path === "/guides.html") return "/guides";
+  if (path === "/changelog" || path === "/changelog.html") return "/changelog";
+  return path;
 }
 function hydrateShell() {
   const header = document.querySelector("[data-header]");
   const footer = document.querySelector("[data-footer]");
   const page = currentPage();
-  if (header) header.innerHTML = `<header class="header"><div class="container nav"><a class="brand" href="./" aria-label="Lodearink API home"><span class="brand-mark">${icon("globe")}</span><span>Lodearink <span style="color:#91baff">API</span></span></a><nav class="nav-links" aria-label="Main navigation">${navItems.map(([label, href]) => `<a href="${href}" ${href.replace("./","") === page || (page === "index.html" && href === "./") ? 'aria-current="page"' : ""}>${label}</a>`).join("")}<a href="./changelog.html">Changelog</a></nav><div class="nav-actions"><button class="button button-ghost search-trigger" type="button" data-open-search>${icon("search")}<span>Search anything</span><kbd>⌘ K</kbd></button><a class="button button-primary button-small" href="./playground.html">Try a request <span aria-hidden="true">↗</span></a><button class="icon-button mobile-trigger" type="button" data-mobile-toggle aria-label="Open navigation" aria-expanded="false">${icon("menu")}</button></div></div><nav class="mobile-menu" data-mobile-menu aria-label="Mobile navigation">${navItems.map(([label, href]) => `<a href="${href}">${label}</a>`).join("")}<a href="./changelog.html">Changelog</a></nav></header>`;
-  if (footer) footer.innerHTML = `<footer class="footer"><div class="container footer-inner"><div><a class="brand" href="./"><span class="brand-mark">${icon("globe")}</span><span>Lodearink <span style="color:#91baff">API</span></span></a><div style="margin-top:9px">A public workspace for discovering and testing API routes.</div></div><div class="footer-links"><a href="./docs.html">Reference</a><a href="./playground.html">Playground</a><a href="./status.html">Status</a><a href="./changelog.html">Changelog</a></div><span>API base <code style="font:11px var(--mono);color:#acbdd1">api.lodearink.name.ng</code></span></div></footer>`;
+  const active = href => (href === page ? 'aria-current="page"' : "");
+  if (header) header.innerHTML = `<header class="header"><div class="container nav"><a class="brand" href="/" aria-label="Lodearink API home"><span class="brand-mark">${icon("globe")}</span><span>Lodearink <span style="color:#91baff">API</span></span></a><nav class="nav-links" aria-label="Main navigation">${navItems.map(([label, href]) => `<a href="${href}" ${active(href)}>${label}</a>`).join("")}<a href="/changelog" ${active("/changelog")}>Changelog</a></nav><div class="nav-actions"><button class="button button-ghost search-trigger" type="button" data-open-search>${icon("search")}<span>Search routes</span><kbd>⌘ K</kbd></button><a class="button button-primary button-small" href="/playground">Try a request <span aria-hidden="true">↗</span></a><button class="icon-button mobile-trigger" type="button" data-mobile-toggle aria-label="Open navigation" aria-expanded="false">${icon("menu")}</button></div></div><nav class="mobile-menu" data-mobile-menu aria-label="Mobile navigation">${navItems.map(([label, href]) => `<a href="${href}" ${active(href)}>${label}</a>`).join("")}<a href="/changelog" ${active("/changelog")}>Changelog</a></nav></header>`;
+  if (footer) footer.innerHTML = `<footer class="footer"><div class="container footer-inner"><div><a class="brand" href="/"><span class="brand-mark">${icon("globe")}</span><span>Lodearink <span style="color:#91baff">API</span></span></a><div style="margin-top:9px">A public workspace for API requests.</div></div><div class="footer-links"><a href="/docs">Reference</a><a href="/playground">Playground</a><a href="/status">Status</a><a href="/changelog">Changelog</a></div><span>API base <code style="font:11px var(--mono);color:#acbdd1">api.lodearink.name.ng</code></span></div></footer>`;
   document.querySelectorAll("[data-icon]").forEach(el => { el.innerHTML = icon(el.dataset.icon); });
   if (!document.querySelector(".search-overlay")) {
     const overlay = document.createElement("div");
@@ -135,7 +146,7 @@ function renderSearchResults(query) {
     const score=item=>item.path.toLowerCase()===term?0:item.path.toLowerCase().startsWith(term)?1:2;
     return score(a)-score(b);
   }).slice(0, 24);
-  target.innerHTML = matches.length ? matches.map(item => `<a class="search-result" role="option" href="./docs.html?endpoint=${encodeURIComponent(item.path)}"><span><strong>${escapeHtml(item.title || item.path)}</strong><br><small>${escapeHtml(item.path)} · ${escapeHtml(item.category)}</small></span>${icon("arrow-right")}</a>`).join("") : `<div class="empty">No matching endpoints. Try a service name or route.</div>`;
+  target.innerHTML = matches.length ? matches.map(item => `<a class="search-result" role="option" href="${escapeHtml(endpointLink("docs", item.path))}"><span><strong>${escapeHtml(item.title || item.path)}</strong><br><small>${escapeHtml(item.path)} · ${escapeHtml(item.category)}</small></span>${icon("arrow-right")}</a>`).join("") : `<div class="empty">No matching endpoints. Try a service name or route.</div>`;
 }
 function renderHomeInventory() {
   // Homepage content is owned by home.js so it cannot be overwritten by shell hydration.

@@ -1,0 +1,54 @@
+/* Small, additive refinements for the existing Lodearink workspace. */
+:root {
+  --refine-focus: #78d8ea;
+  --refine-cyan-soft: rgba(120, 216, 234, .14);
+}
+
+html { scroll-padding-top: 88px; }
+body { overflow-x: clip; }
+button, a, input, select, textarea, [contenteditable="true"] { -webkit-tap-highlight-color: transparent; }
+a, button, input, select, textarea, [contenteditable="true"] {
+  transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .18s ease;
+}
+:where(a, button, input, select, textarea, [contenteditable="true"], [tabindex]):focus-visible {
+  outline: 2px solid var(--refine-focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(120, 216, 234, .12);
+}
+.header { border-bottom-color: rgba(111, 199, 220, .14); }
+.brand-mark { border-color: rgba(115, 212, 232, .45); }
+.nav-links a[aria-current="page"] { color: #c6eff5; }
+.button-primary { background: #c8edf2; border-color: #c8edf2; }
+.button-primary:hover { background: #e1f8fa; border-color: #e1f8fa; }
+.panel { overflow-wrap: anywhere; }
+.search-result:focus-visible, .endpoint-row:focus-visible, .guide-card:focus-visible {
+  background: var(--refine-cyan-soft);
+}
+.page-top h1 i, h1 i, h2 i { color: #a8e7ef; }
+.docs-layout, .playground-layout, .status-row, .kv-row, .multipart-row { min-width: 0; }
+.request-bar > *, .editor-grid > *, .playground-panel, .docs-content { min-width: 0; }
+.request-url, .status-row code, .endpoint-row code { overflow-wrap: anywhere; }
+.mobile-menu a:focus-visible { color: #e4f8fa; }
+.toast { border-color: rgba(120, 216, 234, .28); }
+
+@media (hover: hover) {
+  .nav-links a:hover, .footer-links a:hover, .mobile-menu a:hover { color: #b9edf3; }
+  .icon-button:hover { border-color: rgba(120, 216, 234, .48); }
+  .search-result:hover { background: rgba(120, 216, 234, .09); }
+}
+@media (max-width: 700px) {
+  .container { width: min(100% - 32px, 560px); }
+  .footer-inner { min-width: 0; }
+  .footer-inner > * { max-width: 100%; }
+  .footer-links { gap: 10px 16px; }
+  .page-top { overflow-wrap: anywhere; }
+  .request-bar { grid-template-columns: 78px minmax(0, 1fr); }
+  .request-bar > input { font-size: 10px; }
+  .editor-grid, .status-summary { min-width: 0; }
+  .status-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .tabs { scrollbar-width: thin; }
+  .playground-panel .section-head { align-items: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
