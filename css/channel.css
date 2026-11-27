@@ -1,0 +1,224 @@
+.channel-nav-button {
+  gap: 7px;
+  color: #baf6d1;
+  border-color: rgba(89, 215, 149, .24);
+  background: rgba(39, 154, 91, .07);
+}
+.channel-nav-button:hover {
+  color: #e4ffed;
+  border-color: rgba(105, 236, 164, .55);
+  background: rgba(44, 172, 101, .14);
+}
+.channel-nav-button svg,
+.channel-mobile-link svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.channel-mobile-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 7px;
+  border: 1px solid rgba(89, 215, 149, .2);
+  background: rgba(39, 154, 91, .07);
+  color: #baf6d1 !important;
+}
+.channel-dialog:not([open]) { display: none; }
+.channel-dialog {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 22px;
+  overflow: auto;
+  border: 0;
+  background: transparent;
+  color: var(--text, #eef3fb);
+  overscroll-behavior: contain;
+}
+.channel-dialog::backdrop {
+  background: rgba(2, 5, 10, .78);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  animation: channel-backdrop-in .28s ease-out both;
+}
+.channel-card {
+  position: relative;
+  isolation: isolate;
+  width: min(440px, 100%);
+  max-height: calc(100dvh - 36px);
+  overflow: auto;
+  padding: 38px 34px 30px;
+  border: 1px solid rgba(135, 170, 204, .2);
+  border-radius: 26px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(48, 170, 109, .18), transparent 44%),
+    radial-gradient(ellipse at 100% 100%, rgba(55, 116, 208, .11), transparent 42%),
+    linear-gradient(155deg, #111820, #080b10 72%);
+  box-shadow: 0 34px 110px rgba(0, 0, 0, .62), 0 0 56px rgba(54, 184, 118, .08);
+  text-align: center;
+  animation: channel-card-in .48s cubic-bezier(.2, .8, .2, 1) both;
+}
+.channel-card::before {
+  position: absolute;
+  z-index: -1;
+  top: -118px;
+  left: 50%;
+  width: 270px;
+  height: 190px;
+  border: 1px solid rgba(110, 232, 159, .12);
+  border-radius: 50%;
+  content: "";
+  transform: translateX(-50%) rotate(-12deg);
+  box-shadow: 0 0 60px rgba(71, 211, 132, .07), inset 0 0 34px rgba(71, 211, 132, .05);
+}
+.channel-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgba(180, 198, 215, .14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .035);
+  color: #aeb9c8;
+  cursor: pointer;
+}
+.channel-close:hover {
+  border-color: rgba(180, 198, 215, .32);
+  color: white;
+}
+.channel-close svg { width: 17px; height: 17px; }
+.channel-mark {
+  position: relative;
+  display: grid;
+  width: 70px;
+  height: 70px;
+  margin: 4px auto 19px;
+  place-items: center;
+  border: 1px solid rgba(108, 235, 157, .38);
+  border-radius: 23px;
+  background: linear-gradient(145deg, rgba(46, 164, 99, .25), rgba(18, 59, 41, .46));
+  color: #95f4b7;
+  box-shadow: 0 0 34px rgba(53, 203, 120, .16), inset 0 0 20px rgba(116, 255, 170, .07);
+  animation: channel-float 4.4s ease-in-out infinite;
+}
+.channel-mark svg { width: 31px; height: 31px; }
+.channel-eyebrow {
+  margin-bottom: 10px;
+  color: #88e9ae;
+  font: 500 10px/1.4 var(--mono, monospace);
+  letter-spacing: .16em;
+}
+.channel-card h2 {
+  max-width: 360px;
+  margin: 0 auto 12px;
+  color: #f2f5f8;
+  font-size: clamp(25px, 6vw, 34px);
+  line-height: 1.12;
+  letter-spacing: -.045em;
+}
+.channel-card p {
+  max-width: 340px;
+  margin: 0 auto 24px;
+  color: #a8b2c0;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.channel-follow-button {
+  display: flex;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 17px;
+  border: 1px solid #7ae5a5;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #9af1b8, #65d894);
+  color: #07150d;
+  font-size: 13px;
+  font-weight: 750;
+  box-shadow: 0 10px 30px rgba(53, 203, 120, .16);
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+}
+.channel-follow-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+  box-shadow: 0 14px 36px rgba(53, 203, 120, .24);
+}
+.channel-follow-button svg:first-child { width: 19px; height: 19px; }
+.channel-follow-button svg:last-child { width: 15px; height: 15px; }
+.channel-confirm-button {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 10px;
+  border: 1px solid rgba(166, 187, 207, .18);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .025);
+  color: #c6cfda;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.channel-confirm-button:hover {
+  border-color: rgba(166, 187, 207, .36);
+  background: rgba(255, 255, 255, .06);
+  color: white;
+}
+.channel-note {
+  display: block;
+  margin-top: 15px;
+  color: #707d8c;
+  font-size: 11px;
+}
+.channel-card :focus-visible,
+.channel-nav-button:focus-visible,
+.channel-mobile-link:focus-visible {
+  outline: 2px solid #8ae9ad;
+  outline-offset: 3px;
+}
+@keyframes channel-card-in {
+  from { opacity: 0; transform: translateY(18px) scale(.965); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes channel-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes channel-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-5px) rotate(2deg); }
+}
+@media (max-width: 1100px) {
+  .channel-nav-button { width: 38px; padding-inline: 0; }
+  .channel-nav-label { display: none; }
+}
+@media (max-width: 700px) {
+  .channel-nav-button { width: 38px; height: 38px; min-height: 38px; }
+  .channel-nav-button svg { width: 17px; height: 17px; }
+  .channel-card { padding: 35px 22px 24px; border-radius: 22px; }
+  .channel-follow-button { min-height: 48px; font-size: 12px; }
+}
+@media (max-width: 360px) {
+  .channel-dialog { padding: 12px; }
+  .channel-card { padding-inline: 17px; }
+  .channel-card p { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .channel-card,
+  .channel-mark,
+  .channel-dialog::backdrop { animation: none !important; }
+  .channel-follow-button,
+  .channel-confirm-button { transition: none !important; }
+}

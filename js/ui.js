@@ -1,10 +1,12 @@
 import { endpoints, endpointLink } from "/js/catalog.js";
 
-const favicon = document.createElement('link');
-favicon.rel = 'icon';
-favicon.type = 'image/svg+xml';
-favicon.href = '/favicon.svg';
-document.head.append(favicon);
+if (!document.querySelector('link[rel="icon"]')) {
+  const favicon = document.createElement('link');
+  favicon.rel = 'icon';
+  favicon.type = 'image/svg+xml';
+  favicon.href = '/favicon.svg';
+  document.head.append(favicon);
+}
 const workspaceStyles = document.createElement('link');
 workspaceStyles.rel = 'stylesheet';
 workspaceStyles.href = '/css/workspace.css';
@@ -13,6 +15,10 @@ const refinementStyles = document.createElement('link');
 refinementStyles.rel = 'stylesheet';
 refinementStyles.href = '/css/refinement.css';
 document.head.append(refinementStyles);
+const channelStyles = document.createElement('link');
+channelStyles.rel = 'stylesheet';
+channelStyles.href = '/css/channel.css';
+document.head.append(channelStyles);
 
 const icons = {
   search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
@@ -30,6 +36,7 @@ const icons = {
   trash:'<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/>',
   bookmark:'<path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18l-6-4-6 4z"/>',
   external:'<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+  whatsapp:'<path d="M20.4 11.5a8.3 8.3 0 0 1-12.2 7.2L3 20l1.3-4.8a8.3 8.3 0 1 1 16.1-3.7Z"/><path d="M8.6 8.4c.2-.4.5-.5.8-.5h.4c.2 0 .4.2.5.5l.7 1.5c.1.3.1.5-.1.7l-.5.5c-.2.2-.2.4-.1.6.4.7 1 1.3 1.7 1.7.2.1.4.1.6-.1l.5-.5c.2-.2.4-.2.7-.1l1.5.7c.3.1.5.3.5.5v.4c0 .3-.1.6-.5.8-.7.4-1.5.5-2.2.2-1.1-.4-2.1-1-2.9-1.8s-1.4-1.8-1.8-2.9c-.3-.7-.2-1.5.2-2.2Z"/>',
   youtube:'<path d="M22 12s0-3.2-.4-4.7a2.8 2.8 0 0 0-2-2C17.9 4.8 12 4.8 12 4.8s-5.9 0-7.6.5a2.8 2.8 0 0 0-2 2C2 8.8 2 12 2 12s0 3.2.4 4.7a2.8 2.8 0 0 0 2 2c1.7.5 7.6.5 7.6.5s5.9 0 7.6-.5a2.8 2.8 0 0 0 2-2c.4-1.5.4-4.7.4-4.7Z"/><path d="m10 15 5-3-5-3z"/>',
   spotify:'<circle cx="12" cy="12" r="10"/><path d="M6.8 9.4c3.6-1 7.3-.7 10.5 1.1M7.5 12.5c2.9-.8 5.8-.5 8.3.9M8.2 15.4c2.2-.6 4.4-.3 6.2.7"/>',
   github:'<path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 6v-3.9a3.4 3.4 0 0 0-.9-2.7c3-.3 6.1-1.5 6.1-6.7a5.2 5.2 0 0 0-1.4-3.6 4.8 4.8 0 0 0-.1-3.6s-1.2-.4-3.9 1.4a13.4 13.4 0 0 0-7.1 0C5 1.1 3.8 1.5 3.8 1.5a4.8 4.8 0 0 0-.1 3.6A5.2 5.2 0 0 0 2.3 8.7c0 5.2 3.1 6.4 6.1 6.7a3.4 3.4 0 0 0-.9 2.7V22"/>'
@@ -68,6 +75,7 @@ const navItems = [
   ["Overview","/"], ["API reference","/docs"], ["Playground","/playground"],
   ["Guides","/guides"], ["Usage","/usage"], ["Status","/status"]
 ];
+const WHATSAPP_CHANNEL_URL = "https://whatsapp.com/channel/0029VbEKA2hKLaHlRuVAc22M";
 function currentPage() {
   const path = location.pathname.replace(/\/+$/, "") || "/";
   if (path === "/" || path === "/index.html") return "/";
@@ -85,6 +93,9 @@ function hydrateShell() {
   const page = currentPage();
   const active = href => (href === page ? 'aria-current="page"' : "");
   if (header) header.innerHTML = `<header class="header"><div class="container nav"><a class="brand" href="/" aria-label="Lodearink API home"><span class="brand-mark">${icon("globe")}</span><span>Lodearink <span style="color:#91baff">API</span></span></a><nav class="nav-links" aria-label="Main navigation">${navItems.map(([label, href]) => `<a href="${href}" ${active(href)}>${label}</a>`).join("")}<a href="/changelog" ${active("/changelog")}>Changelog</a></nav><div class="nav-actions"><button class="button button-ghost search-trigger" type="button" data-open-search>${icon("search")}<span>Search routes</span><kbd>⌘ K</kbd></button><a class="button button-primary button-small" href="/playground">Try a request <span aria-hidden="true">↗</span></a><button class="icon-button mobile-trigger" type="button" data-mobile-toggle aria-label="Open navigation" aria-expanded="false">${icon("menu")}</button></div></div><nav class="mobile-menu" data-mobile-menu aria-label="Mobile navigation">${navItems.map(([label, href]) => `<a href="${href}" ${active(href)}>${label}</a>`).join("")}<a href="/changelog" ${active("/changelog")}>Changelog</a></nav></header>`;
+  const channelLink = `<a class="button button-ghost button-small channel-nav-button" data-whatsapp-nav href="${WHATSAPP_CHANNEL_URL}" target="_blank" rel="noopener noreferrer" aria-label="Follow Lodearink on WhatsApp" title="Follow Lodearink on WhatsApp">${icon("whatsapp")}<span class="channel-nav-label">WhatsApp</span></a>`;
+  header?.querySelector(".search-trigger")?.insertAdjacentHTML("afterend", channelLink);
+  header?.querySelector("[data-mobile-menu]")?.insertAdjacentHTML("beforeend", `<a class="channel-mobile-link" href="${WHATSAPP_CHANNEL_URL}" target="_blank" rel="noopener noreferrer">${icon("whatsapp")} Follow the WhatsApp channel</a>`);
    if (footer) footer.innerHTML = `<footer class="footer"><div class="container footer-inner"><div><a class="brand" href="/"><span class="brand-mark">${icon("globe")}</span><span>Lodearink <span style="color:#91baff">API</span></span></a><div style="margin-top:9px">A public workspace for API requests.</div></div><div class="footer-links"><a href="/docs">Reference</a><a href="/playground">Playground</a><a href="/usage">Usage</a><a href="/status">Status</a><a href="/changelog">Changelog</a></div><span>API base <code style="font:11px var(--mono);color:#acbdd1">api.lodearink.name.ng</code></span></div></footer>`;
   document.querySelectorAll("[data-icon]").forEach(el => { el.innerHTML = icon(el.dataset.icon); });
   if (!document.querySelector(".search-overlay")) {
@@ -92,8 +103,57 @@ function hydrateShell() {
     overlay.className = "search-overlay"; overlay.id = "global-search"; overlay.innerHTML = `<section class="search-dialog" role="dialog" aria-modal="true" aria-label="Search API"><div class="search-input-wrap">${icon("search")}<input type="search" placeholder="Search routes and capabilities…" aria-label="Search routes and capabilities"><button class="icon-button" type="button" data-close-search aria-label="Close search">${icon("close")}</button></div><div class="search-results" role="listbox"><div class="empty">Search the API inventory</div></div></section>`;
     document.body.append(overlay);
   }
+  mountWhatsAppPrompt();
   wireShell();
   renderHomeInventory();
+}
+function mountWhatsAppPrompt() {
+  if (document.querySelector(".channel-dialog")) return;
+  const dialog = document.createElement("dialog");
+  dialog.className = "channel-dialog";
+  dialog.setAttribute("aria-labelledby", "channel-dialog-title");
+  dialog.setAttribute("aria-describedby", "channel-dialog-description");
+  dialog.innerHTML = `<section class="channel-card"><button class="channel-close" type="button" data-channel-close aria-label="Close WhatsApp channel invitation">${icon("close")}</button><div class="channel-orbit channel-orbit-one"></div><div class="channel-orbit channel-orbit-two"></div><div class="channel-mark">${icon("whatsapp")}</div><div class="channel-eyebrow">LODEARINK COMMUNITY</div><h2 id="channel-dialog-title">Stay close to what’s next.</h2><p id="channel-dialog-description">Follow our WhatsApp channel for new API updates, useful launches, and product news.</p><a class="channel-follow-button" href="${WHATSAPP_CHANNEL_URL}" target="_blank" rel="noopener noreferrer">${icon("whatsapp")} Follow the WhatsApp channel ${icon("arrow-right")}</a><button class="channel-confirm-button" type="button" data-channel-confirm>I’ve followed the channel</button><span class="channel-note">Already following? Confirm below to hide this card.</span></section>`;
+  document.body.append(dialog);
+  const confirm = dialog.querySelector("[data-channel-confirm]");
+  const closeButton = dialog.querySelector("[data-channel-close]");
+  const storage = {
+    get(key) { try { return localStorage.getItem(key); } catch { return null; } },
+    set(key, value) { try { localStorage.setItem(key, value); } catch {} }
+  };
+  const session = {
+    get(key) { try { return sessionStorage.getItem(key); } catch { return null; } },
+    set(key, value) { try { sessionStorage.setItem(key, value); } catch {} }
+  };
+  let previousOverflow = "";
+  const restoreAfterClose = () => {
+    document.body.style.overflow = previousOverflow;
+    document.querySelector("[data-whatsapp-nav]")?.focus({ preventScroll:true });
+  };
+  const close = () => {
+    if (dialog.open && typeof dialog.close === "function") dialog.close();
+    else {
+      dialog.removeAttribute("open");
+      restoreAfterClose();
+    }
+  };
+  dialog.addEventListener("close", restoreAfterClose);
+  closeButton?.addEventListener("click", close);
+  confirm?.addEventListener("click", () => {
+    storage.set("lodearink-whatsapp-followed", "true");
+    close();
+  });
+  dialog.addEventListener("click", event => { if (event.target === dialog) close(); });
+  if (storage.get("lodearink-whatsapp-followed") === "true" || session.get("lodearink-whatsapp-prompt-shown") === "true") return;
+  session.set("lodearink-whatsapp-prompt-shown", "true");
+  window.setTimeout(() => {
+    if (document.visibilityState === "hidden" || dialog.open) return;
+    previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    if (typeof dialog.showModal === "function") dialog.showModal();
+    else dialog.setAttribute("open", "");
+    closeButton?.focus({ preventScroll:true });
+  }, 850);
 }
 function openSearch() {
   const overlay = document.querySelector(".search-overlay");
