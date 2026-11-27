@@ -43,7 +43,7 @@ export function sharingTags(html){
 }
 
 export async function checkSharing({expectedOrigin,fetchOrigin=expectedOrigin,fetcher=fetch}){
-  const paths=['/','/docs','/playground','/status','/guides','/changelog','/docs/visionai/qwen/analyze','/playground/visionai/qwen/analyze'];
+  const paths=['/','/docs','/playground','/status','/usage','/monitoring-setup','/guides','/changelog','/docs/visionai/qwen/analyze','/playground/visionai/qwen/analyze'];
   const headers={'User-Agent':'facebookexternalhit/1.1'};
   const seen=new Set();
   for(const path of paths){

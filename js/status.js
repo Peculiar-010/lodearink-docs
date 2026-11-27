@@ -79,6 +79,7 @@ function renderObservedItem(item) {
   const meta = catalogFor(item.path);
   const observed = item.observedAvailability || {};
   const passive = item.passive || null;
+  const latency = item.coverage === 'active' ? item.durationMs : passive?.avgResponseMs1h;
   const rateText = passive && validNumber(passive.successRate1h) ? percent(passive.successRate1h) : emDash;
   const coverageLabel = item.coverage === 'active' ? 'Active' : 'Passive';
   const status = statuses.includes(item.state) ? item.state : 'unknown';
@@ -88,7 +89,7 @@ function renderObservedItem(item) {
   const availabilityNote = item.coverage === 'active'
     ? `${num(observed.sampleCount)} conclusive samples`
     : 'Passive health is not active uptime';
-  return `<details class="obs-status-item"><summary class="obs-status-summary"><span class="obs-status-path"><code>${pathMarkup}</code><small>${esc(meta?.title || meta?.service || meta?.category || 'Public API endpoint')}${meta?.category ? ` · ${esc(meta.category)}` : ''}</small></span>${renderBadge(status)}<span class="obs-col obs-coverage-col">${esc(coverageLabel)}<small>${item.coverage === 'active' ? 'Scheduled check' : 'Normal traffic'}</small></span><span class="obs-col obs-latency-col">${esc(duration(item.durationMs))}<small>${validNumber(item.httpStatus) ? `HTTP ${esc(item.httpStatus)}` : 'No HTTP status'}</small></span><span class="obs-col obs-next-col">${esc(safeTime(item.nextCheckAt))}<small>Next scheduled</small></span></summary><div class="obs-status-detail"><div class="obs-detail-grid"><div class="obs-detail-cell"><span>Last scheduled check</span><strong>${esc(safeTime(item.lastCheckAt))}</strong></div><div class="obs-detail-cell"><span>Next scheduled check</span><strong>${esc(safeTime(item.nextCheckAt))}</strong></div><div class="obs-detail-cell"><span>Observed active availability</span><strong>${esc(availability)} · ${esc(availabilityNote)}</strong></div><div class="obs-detail-cell"><span>Availability sample window</span><strong>${esc(observed.from ? safeTime(observed.from) : emDash)} → ${esc(observed.to ? safeTime(observed.to) : emDash)}</strong></div><div class="obs-detail-cell"><span>Conclusive active checks</span><strong>${esc(num(observed.sampleCount))} samples · ${esc(num(observed.successful))} successful · ${esc(num(observed.unsuccessful))} unsuccessful</strong></div><div class="obs-detail-cell"><span>Excluded observations</span><strong>${esc(num(observed.excluded))} network / validation / auth failures</strong></div><div class="obs-detail-cell"><span>Latest reason</span><strong>${esc(stateReason(item))}</strong></div><div class="obs-detail-cell"><span>Passive traffic · last hour</span><strong>${passive ? `${esc(num(passive.requests1h))} sampled requests · ${esc(rateText)} success · ${esc(safeTime(passive.lastSeenAt))}` : 'No passive sample reported'}</strong></div></div><div class="obs-history"><h3>Recent scheduled-check history · newest first · up to 12</h3>${historyMarkup(item.history)}</div></div></details>`;
+  return `<details class="obs-status-item"><summary class="obs-status-summary"><span class="obs-status-path"><code>${pathMarkup}</code><small>${esc(meta?.title || meta?.service || meta?.category || 'Public API endpoint')}${meta?.category ? ` · ${esc(meta.category)}` : ''}</small></span>${renderBadge(status)}<span class="obs-col obs-coverage-col">${esc(coverageLabel)}<small>${item.coverage === 'active' ? 'Scheduled check' : 'Normal traffic'}</small></span><span class="obs-col obs-latency-col">${esc(duration(latency))}<small>${validNumber(item.httpStatus) ? `HTTP ${esc(item.httpStatus)}` : 'No HTTP status'}</small></span><span class="obs-col obs-next-col">${esc(safeTime(item.nextCheckAt))}<small>Next scheduled</small></span></summary><div class="obs-status-detail"><div class="obs-detail-grid"><div class="obs-detail-cell"><span>Last scheduled check</span><strong>${esc(safeTime(item.lastCheckAt))}</strong></div><div class="obs-detail-cell"><span>Next scheduled check</span><strong>${esc(safeTime(item.nextCheckAt))}</strong></div><div class="obs-detail-cell"><span>Last normal request</span><strong>${passive ? `HTTP ${esc(num(passive.lastStatus))} · ${esc(safeTime(passive.lastSeenAt))}` : 'No passive observation'}</strong></div><div class="obs-detail-cell"><span>Observed active availability</span><strong>${esc(availability)} · ${esc(availabilityNote)}</strong></div><div class="obs-detail-cell"><span>Availability sample window</span><strong>${esc(observed.from ? safeTime(observed.from) : emDash)} → ${esc(observed.to ? safeTime(observed.to) : emDash)}</strong></div><div class="obs-detail-cell"><span>Conclusive active checks</span><strong>${esc(num(observed.sampleCount))} samples · ${esc(num(observed.successful))} successful · ${esc(num(observed.unsuccessful))} unsuccessful</strong></div><div class="obs-detail-cell"><span>Excluded observations</span><strong>${esc(num(observed.excluded))} network / validation / auth failures</strong></div><div class="obs-detail-cell"><span>Latest reason</span><strong>${esc(stateReason(item))}</strong></div><div class="obs-detail-cell"><span>Passive traffic · last hour</span><strong>${passive ? `${esc(num(passive.requests1h))} sampled requests · ${esc(rateText)} success · ${esc(duration(passive.avgResponseMs1h))} avg · ${esc(safeTime(passive.lastSeenAt))}` : 'No passive sample reported'}</strong></div></div><div class="obs-history"><h3>Recent scheduled-check history · newest first · up to 12</h3>${historyMarkup(item.history)}</div></div></details>`;
 }
 function renderHistorical() {
   const matching = endpoints.filter(item => {
@@ -157,7 +158,7 @@ function render(value) {
     ? `<strong>Snapshot ${esc(safeTime(snapshot.monitoring?.updatedAt || snapshot.generatedAt))}</strong>${validNumber(value.ageSeconds) ? `Age ${esc(num(value.ageSeconds))}s` : ''}`
     : `<strong>${setupMissing ? 'Historical inventory only' : 'No monitoring snapshot'}</strong>`;
 }
-async function refresh() {
+async function refresh(force = false) {
   if (disposed || running || document.hidden) return;
   running = true;
   refreshButton.disabled = true;
@@ -165,7 +166,7 @@ async function refresh() {
   controller?.abort();
   controller = new AbortController();
   try {
-    const value = await loadObservability({force:false,signal:controller.signal});
+    const value = await loadObservability({force,signal:controller.signal});
     if (!disposed) render(value);
   } catch {
     if (!disposed) render({state:'unavailable',snapshot:result?.snapshot || null,message:'Shared monitoring data could not be read.'});
@@ -194,7 +195,7 @@ root.addEventListener('change',event => {
   if (event.target === coverageSelect) coverage = coverageSelect.value;
   render(result);
 });
-refreshButton.addEventListener('click',refresh);
+refreshButton.addEventListener('click',() => refresh(true));
 document.addEventListener('visibilitychange',() => {
   if (document.hidden) clearTimeout(timer);
   else { refresh(); armPoll(); }

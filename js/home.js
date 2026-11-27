@@ -1,10 +1,9 @@
 import {endpoints, categories, endpointLink} from './catalog.js';
 import {escapeHtml as esc, icon, renderBadge} from './ui.js';
-import {endpointStatus, checkEndpoint} from './api.js';
 const featured = ['/health', '/search', '/npm/package', '/visionai/qwen/analyze', '/ytdl/info', '/football/leagues'].map(p => endpoints.find(e => e.path === p)).filter(Boolean);
 const target = document.querySelector('#home-featured');
 function renderFeatured() {
-  if (target) target.innerHTML = featured.map(e => `<a class="panel featured-item" href="${endpointLink('docs', e.path)}"><div><strong>${esc(e.category)}</strong><code>${esc(e.path)}</code></div><div class="featured-side">${renderBadge(endpointStatus(e).state)}${icon('arrow-right')}</div></a>`).join('');
+  if (target) target.innerHTML = featured.map(e => `<a class="panel featured-item" href="${endpointLink('docs', e.path)}"><div><strong>${esc(e.category)}</strong><code>${esc(e.path)}</code></div><div class="featured-side">${renderBadge(e.status.state)}${icon('arrow-right')}</div></a>`).join('');
 }
 renderFeatured();
 const categoryGrid = document.querySelector('#home-categories');
@@ -15,6 +14,3 @@ if (categoryGrid) categoryGrid.innerHTML = categories.map(c => {
 }).join('');
 document.querySelectorAll('[data-endpoint-count]').forEach(el => el.textContent = endpoints.length);
 document.querySelectorAll('[data-category-count]').forEach(el => el.textContent = categories.length);
-// Check only the inexpensive dedicated health route, using a ten-minute cache.
-const health = endpoints.find(e => e.path === '/health');
-if (health) checkEndpoint(health).then(renderFeatured).catch(() => {});

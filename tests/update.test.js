@@ -51,7 +51,7 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
   const manifest=JSON.parse(readFileSync(new URL('../dist/share-manifest.json',import.meta.url),'utf8'));
   const origin=new URL(site.url).origin;
   assert.equal(manifest.origin,origin);
-  assert.equal(manifest.pages.length,inventory.length*2+7);
+  assert.equal(manifest.pages.length,inventory.length*2+9);
   const decoded=new Set();
   for(const page of manifest.pages){
     const filename=page.path==='/'?'index':page.path.slice(1);
@@ -77,7 +77,7 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
     if(!decoded.has(page.image)){inspectPng(buffer);decoded.add(page.image);}
     if(page.endpoint){assert.ok(html.includes(page.endpoint));assert.ok(html.includes('Status: '+page.status.state.replaceAll('-',' ')));}
   }
-  assert.equal(decoded.size,inventory.length+7);
+  assert.equal(decoded.size,inventory.length+9);
   const sitemap=readFileSync(new URL('../dist/sitemap.xml',import.meta.url),'utf8');
   const locations=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
   assert.equal(locations.length,manifest.pages.length-1);

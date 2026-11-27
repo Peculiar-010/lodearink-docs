@@ -152,7 +152,7 @@ function render(value) {
     chart.textContent=value?.state === 'setup-required' ? 'No live traffic data is connected.' : 'Shared traffic snapshot unavailable.';
   }
 }
-async function refresh() {
+async function refresh(force = false) {
   if (disposed || running || document.hidden) return;
   running = true;
   refreshButton.disabled = true;
@@ -160,7 +160,7 @@ async function refresh() {
   controller?.abort();
   controller = new AbortController();
   try {
-    const value = await loadObservability({force:false,signal:controller.signal});
+    const value = await loadObservability({force,signal:controller.signal});
     if (!disposed) render(value);
   } catch {
     if (!disposed) render({state:'unavailable',snapshot:result?.snapshot || null,message:'Shared monitoring data could not be read.'});
@@ -190,7 +190,7 @@ root.querySelector('#usage-endpoint-search').addEventListener('input',event => {
   endpointSearch = event.target.value;
   renderEndpoints(result?.snapshot?.usage?.windows?.[selectedWindow] || null);
 });
-refreshButton.addEventListener('click',refresh);
+refreshButton.addEventListener('click',() => refresh(true));
 document.addEventListener('visibilitychange',() => {
   if (document.hidden) clearTimeout(timer);
   else { refresh(); armPoll(); }

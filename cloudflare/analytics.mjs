@@ -4,7 +4,8 @@ const allowed=new Set([...ROUTES,UNMATCHED]);
 const HOUR=3600_000;
 export const WINDOWS={'1h':HOUR,'24h':24*HOUR,'7d':7*24*HOUR};
 const iso=value=>{
-  const date=new Date(typeof value==='string'&&!/[TZ+]/.test(value)?value.replace(' ','T')+'Z':value);
+  const normalized=typeof value==='number'?value<100_000_000_000?value*1000:value:typeof value==='string'&&!/[TZ+]/.test(value)?value.replace(' ','T')+'Z':value;
+  const date=new Date(normalized);
   return Number.isFinite(date.getTime())?date.toISOString():null;
 };
 const number=value=>Number.isFinite(Number(value))?Math.max(0,Number(value)):0;
@@ -23,9 +24,9 @@ export function analyticsQueries(dataset,now=Date.now()){
     ];
   });
   return [
-    `SELECT blob1 AS endpoint, ${columns.join(', ')}, MAX(_sample_interval) AS sampleInterval, MIN(timestamp) AS firstSeen, MAX(timestamp) AS lastSeen, argMax(double1, timestamp) AS lastStatus FROM ${dataset} WHERE ${where} GROUP BY endpoint LIMIT 208 FORMAT JSON`,
+    `SELECT blob1 AS endpoint, ${columns.join(', ')}, MAX(_sample_interval) AS sampleInterval, toUInt32(MIN(timestamp)) AS firstSeen, toUInt32(MAX(timestamp)) AS lastSeen, argMax(double1, timestamp) AS lastStatus FROM ${dataset} WHERE ${where} GROUP BY endpoint LIMIT 208 FORMAT JSON`,
     `SELECT intDiv(toUInt32(timestamp), 300) * 300 AS t, SUM(_sample_interval) AS requests, MAX(_sample_interval) AS sampleInterval FROM ${dataset} WHERE ${where} GROUP BY t ORDER BY t ASC LIMIT 2018 FORMAT JSON`,
-    `SELECT timestamp AS time, blob1 AS endpoint, blob2 AS method, double1 AS status, double2 AS responseMs, _sample_interval AS sampleInterval FROM ${dataset} WHERE ${where} ORDER BY timestamp DESC LIMIT 24 FORMAT JSON`
+    `SELECT toUInt32(timestamp) AS time, blob1 AS endpoint, blob2 AS method, double1 AS status, double2 AS responseMs, _sample_interval AS sampleInterval FROM ${dataset} WHERE ${where} ORDER BY timestamp DESC LIMIT 24 FORMAT JSON`
   ];
 }
 export async function readAnalytics(env,now=Date.now(),fetcher=fetch){

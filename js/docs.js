@@ -1,6 +1,6 @@
 import {endpoints, categories, findEndpoint, findEndpointFromLocation, endpointLink, exampleRequest} from './catalog.js';
 import {escapeHtml as esc, icon, renderBadge, formatTime, toast} from './ui.js';
-import {endpointStatus, copyText, checkEndpoint} from './api.js';
+import {copyText} from './api.js';
 import {generateCode} from './code-generator.js';
 import {highlight} from './highlight.js';
 
@@ -20,12 +20,12 @@ function renderList(){
     const group=e.category;
     const heading=previous!==group?`<div class="endpoint-group-label">${esc(group)}</div>`:'';
     previous=group;
-    return `${heading}<a class="endpoint-row ${e===current?'active':''}" ${e===current?'aria-current="page"':''} href="${endpointLink('docs',e.path)}" data-path="${esc(e.path)}"><span class="method">${esc(e.methods.join('/')||'—')}</span><code>${esc(e.path)}</code><span class="mini-status ${esc(endpointStatus(e).state)}" aria-label="${esc(endpointStatus(e).state)}"></span></a>`;
+     return `${heading}<a class="endpoint-row ${e===current?'active':''}" ${e===current?'aria-current="page"':''} href="${endpointLink('docs',e.path)}" data-path="${esc(e.path)}"><span class="method">${esc(e.methods.join('/')||'—')}</span><code>${esc(e.path)}</code><span class="mini-status ${esc(e.status.state)}" aria-label="${esc(e.status.state)}"></span></a>`;
   }).join('')||'<div class="empty">No matching endpoints.</div>';
 }
 function renderDetail(){
   if(!current){detail.innerHTML='<div class="empty"><h2>Endpoint not found</h2><a class="button" href="/docs">Browse the reference</a></div>';return;}
-  const e=current,status=endpointStatus(e),sample=exampleRequest(e);
+   const e=current,status=e.status,sample=exampleRequest(e);
   const latest=[...e.evidence].reverse().find(ev=>ev.response)||e.evidence.at(-1);
   const error=e.evidence.find(ev=>ev.httpStatus>=400&&ev.response);
   const bodyFields=e.parameters.filter(p=>['body','form','file'].includes(p.in));
@@ -33,7 +33,7 @@ function renderDetail(){
   const table=fields=>`<div class="table-wrap"><table class="data-table"><thead><tr><th>Parameter</th><th>Location</th><th>Example</th></tr></thead><tbody>${fields.map(p=>`<tr><td><code>${esc(p.name)}</code>${p.required===true?' <small class="muted">required</small>':''}</td><td>${esc(p.in)}</td><td><code>${esc(p.example||'Your value')}</code></td></tr>`).join('')}</tbody></table></div>`;
   detail.innerHTML=`<div class="eyebrow"><a href="/docs">Reference</a> / ${esc(e.category)}</div>
   <div class="detail-head"><div><h2>${esc(e.title)}</h2><code class="detail-path">${esc(e.path)}</code></div><a class="button button-primary button-small" href="${endpointLink('playground',e.path)}">Try it ${icon('arrow-right')}</a></div>
-  <div class="detail-meta"><span class="method">${esc(e.methods.join(' / ')||'Method unconfirmed')}</span>${renderBadge(status.state)}<small class="muted">Checked ${esc(formatTime(status.checkedAt))}</small></div>
+   <div class="detail-meta"><span class="method">${esc(e.methods.join(' / ')||'Method unconfirmed')}</span>${renderBadge(status.state)}<small class="muted">Catalog checked ${esc(formatTime(status.checkedAt))}</small></div>
   ${status.state!=='online'?`<p class="notice">${esc(status.note)}</p>`:''}
   <div class="detail-section"><div class="section-head"><h3>Request URL</h3><button class="icon-button" data-copy="url" aria-label="Copy complete URL">${icon('copy')}</button></div><code class="request-url standalone-url">${esc(sample.url)}</code></div>
   ${queryFields.length?`<div class="detail-section"><h3>Parameters</h3>${table(queryFields)}</div>`:''}
@@ -44,14 +44,10 @@ function renderDetail(){
   }).join('')}<a class="text-link" href="${endpointLink('playground',e.path)}">More languages in the playground ${icon('arrow-right')}</a></div>
   <details class="detail-section"><summary>Response example ${latest?.httpStatus?'· HTTP '+latest.httpStatus:''}</summary>${latest?.response?`<pre class="code-block">${highlight(latest.response,/json/.test(latest.contentType))}</pre>`:`<p class="muted">${esc(latest?.contentType||'No response received')}. Open the playground to inspect a live response.</p>`}<small class="muted">Checked ${esc(formatTime(latest?.checkedAt))}. Examples may be truncated.</small></details>
   ${error?`<details class="detail-section"><summary>Error example · HTTP ${error.httpStatus}</summary><pre class="code-block">${highlight(error.response,/json/.test(error.contentType))}</pre></details>`:''}
-  ${e.safeCheck?'<button class="button button-ghost button-small" id="check-route">Refresh status</button>':''}`;
+   <a class="button button-ghost button-small" href="/status">View scheduled status</a>`;
   detail.querySelectorAll('[data-copy],[data-copy-method]').forEach(button=>button.addEventListener('click',async()=>{
     try{await copyText(button.dataset.copy==='url'?sample.url:generateCode(exampleRequest(e,button.dataset.copyMethod),'cURL'));toast('Copied');}catch(error){toast(error.message);}
   }));
-  detail.querySelector('#check-route')?.addEventListener('click',async event=>{
-    event.currentTarget.disabled=true;event.currentTarget.textContent='Checking…';
-    try{await checkEndpoint(e,{force:true});renderDetail();renderList();}catch(error){toast(error.message);renderDetail();}
-  });
   document.title=`${e.path} — Lodearink API`;
 }
 function selectFromLocation(){

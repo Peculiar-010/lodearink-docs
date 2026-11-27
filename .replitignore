@@ -1,4 +1,5 @@
 /generated-artifacts/
 /dist/
+/cloudflare/.dev.vars
 .cache/
 node_modules/

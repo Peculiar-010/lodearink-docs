@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07090d">
+  <title>Cloudflare monitoring setup — Lodearink API</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/observability.css">
+  <script type="module" src="/js/ui.js"></script>
+</head>
+<body>
+  <div data-header></div>
+  <main class="container observability" aria-labelledby="setup-title">
+    <div class="page-top">
+      <div class="eyebrow">Cloudflare / private integration</div>
+      <h1 id="setup-title">Connect real monitoring.</h1>
+      <p>Install a small adapter in the private API project and deploy a separate read-only snapshot Worker. This docs site never needs the API source or any Cloudflare secret.</p>
+    </div>
+    <div class="obs-banner" data-tone="warning"><div><div class="obs-banner-label">Owner setup required</div><p>Until the API adapter and Worker are deployed and configured, Usage shows no invented totals and Status labels catalog entries as historical only.</p></div></div>
+    <section class="panel obs-panel">
+      <h2>What this collects</h2>
+      <p>Normalized route template, method, HTTP status, time to response headers, and whether the request came from the scheduled monitor. It does not store request or response bodies, query values, headers, tokens, IP addresses, email addresses or dynamic resource IDs.</p>
+      <p>Normal traffic counts include bots and other clients; this is not a count of people. Recent events are sampled observations, not a complete audit log. Cloudflare Analytics Engine provides weighted sampling-aware estimates.</p>
+      <p>Automatic checks use a reviewed, fixed set of read-only health, search and metadata routes. Generation, downloads, uploads, builds and mailbox creation are not triggered. All other routes are marked passive: their health is inferred only from real observed traffic.</p>
+    </section>
+    <section class="panel obs-panel obs-section">
+      <h2>1. Keep the API repository private</h2>
+      <p>Do not upload or copy the private API repository into this docs project. In the private API project, copy only these two generic files from this repository: <code>cloudflare/adapter.mjs</code> and <code>cloudflare/routes.mjs</code> into a private path such as <code>src/observability/</code>. The route file is generated from the fixed public contract list; it is not discovered from the health response.</p>
+      <p>Add the Analytics Engine dataset binding from <code>cloudflare/api-binding.example.toml</code> to the private project's existing Wrangler configuration. Merge the binding only; preserve the current main entry, bindings, settings and scheduled triggers.</p>
+      <p>Wrap the existing exported module with <code>withObservability(existingWorker)</code> as shown in <code>cloudflare/entrypoint.example.mjs</code>. Adjust the import path to the real handler. Keep its fetch handler, response object, streaming, cron jobs and other exports. The wrapper returns the original response and fails open if telemetry cannot be written.</p>
+      <pre class="code-block"><code>import existingWorker from './existing-worker.mjs';
+import {withObservability} from './observability/adapter.mjs';
+export default withObservability(existingWorker);</code></pre>
+      <p>Deploy the private API update using its existing workflow. Validate one ordinary safe API request and one monitor request. The monitor token header is stripped before the existing application handler runs.</p>
+    </section>
+    <section class="panel obs-panel obs-section">
+      <h2>2. Create the dedicated monitoring database</h2>
+      <p>In Cloudflare, create a new D1 database named <code>lodearink-observability</code>. Do not reuse the API's application database. Put the new ID in <code>cloudflare/wrangler.toml</code>; this file is a template for a separate Worker and must not replace the API configuration.</p>
+      <p>From this repository's <code>cloudflare/</code> directory, apply the schema and the generated reviewed probe queue:</p>
+      <pre class="code-block"><code>npx wrangler@4 d1 execute lodearink-observability --remote --file=schema.sql
+npx wrangler@4 d1 execute lodearink-observability --remote --file=seed.sql</code></pre>
+      <p>The bounded D1 schema stores at most twelve monitoring outcomes per route and one shared prepared snapshot. It does not store per-request records. Re-running the seed file is safe.</p>
+    </section>
+    <section class="panel obs-panel obs-section">
+      <h2>3. Store narrowly scoped secrets in Cloudflare</h2>
+      <p>Create a custom Cloudflare token with only <strong>Account → Account Analytics → Read</strong> permission. In the monitoring Worker's directory, set it as a Worker secret. It is used only by the scheduled snapshot job for the Analytics Engine SQL API.</p>
+      <pre class="code-block"><code>npx wrangler@4 secret put CF_ANALYTICS_TOKEN</code></pre>
+      <p>Generate a separate random value with at least 32 bytes of entropy. Set the exact same value as a secret on both the monitoring Worker and the private API Worker:</p>
+      <pre class="code-block"><code>openssl rand -hex 32
+npx wrangler@4 secret put MONITOR_TOKEN</code></pre>
+      <p>Paste the generated value only into Cloudflare's hidden secret prompts in each project. In the companion Worker, run <code>npx wrangler@4 secret put MONITOR_TOKEN</code>. In the private API project, run the same command there and enter the same generated value. Never put it in this site, a source file, command argument, Git, an issue, or chat. The API Worker uses it to flag and exclude scheduled monitor traffic from normal usage totals.</p>
+    </section>
+    <section class="panel obs-panel obs-section">
+      <h2>4. Configure and deploy the snapshot Worker</h2>
+      <p>In <code>cloudflare/wrangler.toml</code>, set your Cloudflare account ID, the D1 database ID, API origin and the docs origin. Use <code>https://lodearink-docs-o4dd.vercel.app</code> for the current docs origin. Configure the existing API origin exactly; both are public hostnames, not secrets.</p>
+      <p>From the <code>cloudflare/</code> directory, add the Worker secrets, then publish the separate companion Worker:</p>
+      <pre class="code-block"><code>npx wrangler@4 secret put MONITOR_TOKEN
+npx wrangler@4 deploy</code></pre>
+      <p>The one-minute schedule shares a single D1 snapshot and advances at most four due endpoint checks per run, with at most two checks in flight. Each route is checked about every two hours. A snapshot performs three fixed Analytics Engine reads, below the free-plan query allowance, and checks never follow redirects or run generation, uploads, downloads or account creation.</p>
+      <p>Each dashboard refresh makes one indexed D1 snapshot-row read. The browser does not query Analytics Engine; those three reads happen only once in the shared minute schedule. Cloudflare Cache API behavior is not assumed on <code>workers.dev</code>.</p>
+      <p>Read Cloudflare's account-wide free limits before enabling this on a busy account. Current documented Free allowances are 100,000 Workers requests/day, 10 ms CPU and 50 outgoing subrequests/invocation; Analytics Engine allows 100,000 data points and 10,000 SQL reads/day; D1 allows 5 million rows read, 100,000 rows written per day and 5 GB total storage. These limits are shared with the rest of your Cloudflare account. The schedule makes 4,320 Analytics Engine queries/day at three reads per minute, before retries or other account use. Each dashboard refresh performs one indexed D1 row read. This design is bounded but cannot guarantee staying within account limits when existing traffic is already near quota.</p>
+    </section>
+    <section class="panel obs-panel obs-section">
+      <h2>5. Point the docs site at the public snapshot</h2>
+      <p>After the Worker is deployed, copy its public <code>workers.dev</code> URL and append <code>/v1/snapshot</code>. Set only <code>snapshotUrl</code> in <code>data/observability-config.json</code>. It must be a public HTTPS URL; never put a token or account ID there.</p>
+      <pre class="code-block"><code>{
+  "snapshotUrl": "https://YOUR-WORKER.YOUR-ACCOUNT.workers.dev/v1/snapshot"
+}</code></pre>
+      <p>Build and deploy the docs site using its existing Vercel setup. The browser reads the shared public snapshot once a minute, never triggers checks and never receives the Analytics Engine token.</p>
+    </section>
+    <section class="panel obs-panel obs-section">
+      <h2>6. Verify real traffic and safe checks</h2>
+      <p>In this documentation repository, the adapter, sampling, public snapshot and bounded scheduler tests use in-memory mocks and do not contact the private API or Cloudflare:</p>
+      <pre class="code-block"><code>npm run build
+npm test
+node --test tests/cloudflare*.test.js tests/observability-client.test.js</code></pre>
+      <p>With the documentation workflow running on port 5000, run <code>node tests/observability-browser.mjs</code> for a responsive browser check. It injects a clearly isolated test snapshot, intercepts the mock Worker URL and makes no calls to Cloudflare or the API.</p>
+      <p>For local Worker route checks, from <code>cloudflare/</code> run <code>npx wrangler@4 dev</code>. In another terminal, try <code>curl -i http://127.0.0.1:8787/v1/snapshot</code>, the same request with <code>-H 'Origin: https://lodearink-docs-o4dd.vercel.app'</code>, and a <code>POST</code> request that should return <code>405</code>. Without a seeded local D1 snapshot, <code>503</code> with <code>awaiting-first-scheduled-snapshot</code> is expected. Do not put local secrets in a tracked file; <code>cloudflare/.dev.vars</code> is gitignored.</p>
+      <ol>
+        <li>Send one ordinary read-only request to the private API after deploying the adapter.</li>
+        <li>Wait for the next scheduled snapshot, then open <a class="obs-link" href="/usage">Usage</a> and check that the normalized endpoint, method and HTTP status appear without request content.</li>
+        <li>Check <a class="obs-link" href="/status">Status</a> for the next scheduled check, its result and the passive-only coverage count.</li>
+        <li>In Cloudflare, check that Analytics Engine has new points in <code>lodearink_requests</code>, D1 has one snapshot row and that a monitor request appears with source <code>monitor</code>, not as normal usage.</li>
+        <li>If no live snapshot appears, verify the D1 ID, dataset binding name, both matching secrets, docs origin allowlist, Analytics permission and scheduled Worker events. Dashboard failure never changes a private API response.</li>
+      </ol>
+    </section>
+    <section class="panel obs-panel obs-section">
+      <h2>Free-plan and retention notes</h2>
+      <p>The public snapshot is aggregated; sampled individual events cannot reconstruct exact request order. Analytics Engine retains its own data for a limited period. D1 stores only one prepared usage snapshot and a twelve-result ring per monitored route; monitoring history therefore spans the recent scheduled-check sample window, not a permanent archive.</p>
+      <p>Active availability counts successful responses versus confirmed HTTP/application failures. Timeouts, authentication issues, validation responses and redirects are excluded from the availability percentage rather than called downtime. Passive observations are shown separately and are never labeled as active uptime.</p>
+      <p>Current configuration references: <code>cloudflare/schema.sql</code>, <code>cloudflare/seed.sql</code>, <code>cloudflare/probes.mjs</code>, <code>cloudflare/worker.mjs</code>, <code>cloudflare/analytics.mjs</code> and <code>cloudflare/monitor.mjs</code>. The docs repository does not include the private API source.</p>
+      <p>Official references: <a class="obs-link" href="https://developers.cloudflare.com/analytics/analytics-engine/pricing/">Analytics Engine pricing</a> · <a class="obs-link" href="https://developers.cloudflare.com/analytics/analytics-engine/sampling/">sampling</a> · <a class="obs-link" href="https://developers.cloudflare.com/d1/platform/pricing/">D1 pricing</a> · <a class="obs-link" href="https://developers.cloudflare.com/workers/platform/limits/">Workers limits</a> · <a class="obs-link" href="https://developers.cloudflare.com/workers/configuration/cron-triggers/">Cron Triggers</a>.</p>
+    </section>
+  </main>
+  <div data-footer></div>
+</body>
+</html>

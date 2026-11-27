@@ -2,6 +2,8 @@
 
 Only the companion Worker produces this response. The browser polls `/v1/snapshot`
 once a minute and never triggers collection or endpoint probes.
+Each public poll performs one indexed D1 snapshot-row read. Analytics Engine is read
+only by the shared scheduled Worker, never once per visitor or per browser.
 
 `schemaVersion: 1`, `generatedAt` ISO timestamp, `collectionStartedAt` ISO timestamp
 or null (first observed real request; never implies earlier request history).
@@ -28,13 +30,13 @@ bots and all non-monitor clients; it is not a count of humans.
 metrics routes to the API catalog. Each monitoring entry has `path`,
 `coverage` (`active` or `passive`), `state` (`online`, `degraded`,
 `requires-parameters`, `unknown`), nullable `lastCheckAt`, `nextCheckAt`,
-`durationMs`, `httpStatus`, `reason` (fixed code), `history` (newest first,
+`durationMs`, `httpStatus` (scheduled or recent passive response), `reason` (fixed code), `history` (newest first,
 up to 12 `{at,state,status,responseMs,reason}` records),
 `observedAvailability`: `{percent,successful,unsuccessful,excluded,sampleCount,from,to}`.
 Percent is null without conclusive active observations. Network/validation/auth
 failures are excluded rather than presented as proven downtime.
 
-`passive` is null or `{lastSeenAt,lastStatus,requests1h,successRate1h}` from sampled
+`passive` is null or `{lastSeenAt,lastStatus,requests1h,successRate1h,avgResponseMs1h}` from sampled
 normal traffic. Passive health is not active-check uptime. No traffic means
 unknown, not healthy or offline.
 

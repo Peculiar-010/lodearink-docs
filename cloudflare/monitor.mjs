@@ -28,7 +28,7 @@ export async function runProbe(definition,env,{fetcher=fetch,now=Date.now()}={})
   const result={at:new Date(now).toISOString(),state:'unknown',status:0,responseMs:null,reason:'network-error'};
   const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
   try{
-    const response=await fetcher(url,{method:'GET',redirect:'manual',headers:{'X-Lodearink-Monitor':env.MONITOR_TOKEN,Accept:'application/json'},signal:controller.signal});
+    const response=await fetcher(url,{method:'GET',redirect:'manual',headers:{'X-Lodearink-Monitor':env.MONITOR_TOKEN,'Accept':'application/json'},signal:controller.signal});
     result.status=response.status;result.responseMs=Math.round((performance.now()-start)*100)/100;
     if(response.status>=500){await response.body?.cancel();return {...result,state:'degraded',reason:'http-5xx'};}
     if([400,405,422].includes(response.status)){await response.body?.cancel();return {...result,state:'requires-parameters',reason:'validation'};}
@@ -71,10 +71,10 @@ export function monitoringSnapshot(rows,usage,now=Date.now(),configured=true){
       return {
         path,coverage:active?'active':'passive',state:active?(activeFresh?latest.state:'unknown'):passiveState,
         lastCheckAt:latest?.at||null,nextCheckAt:active&&configured&&row?new Date(row.next_due||now).toISOString():null,
-        durationMs:latest?.responseMs??null,httpStatus:latest?.status??null,
+        durationMs:latest?.responseMs??null,httpStatus:latest?.status??(observedFresh?lastStatus:null),
         reason:active?(!configured?'monitor-not-configured':!row?'queue-not-initialized':!latest?'awaiting-check':activeFresh?latest.reason:'stale-check'):'passive-only',
         history,observedAvailability:availability(history),
-        passive:observation?{lastSeenAt:observation.lastSeenAt,lastStatus,requests1h:hourly?.requests||0,successRate1h:hourly?.requests?hourly.successes/hourly.requests*100:null}:null
+        passive:observation?{lastSeenAt:observation.lastSeenAt,lastStatus,requests1h:hourly?.requests||0,successRate1h:hourly?.requests?hourly.successes/hourly.requests*100:null,avgResponseMs1h:hourly?.avgResponseMs??null}:null
       };
     })
   };

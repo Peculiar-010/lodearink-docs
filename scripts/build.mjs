@@ -21,6 +21,8 @@ const pages=[
   ['docs','/docs','API reference — Lodearink API','Explore API endpoints, request parameters, examples and availability.'],
   ['playground','/playground','API playground — Lodearink API','Build requests, inspect live responses and copy client code.'],
   ['status','/status','API status — Lodearink API','Endpoint availability from timestamped checks of the live API.'],
+  ['usage','/usage','API usage — Lodearink API','Shared API request volumes, response measurements and sampled activity.'],
+  ['monitoring-setup','/monitoring-setup','Cloudflare monitoring setup — Lodearink API','Install private API request monitoring and scheduled endpoint checks on Cloudflare Free.'],
   ['guides','/guides','Developer guides — Lodearink API','Practical guides to requests, uploads, media and asynchronous tasks.'],
   ['changelog','/changelog','Changelog — Lodearink API','Updates to the Lodearink API documentation.'],
   ['404','/404','Page not found — Lodearink API','Return to the API reference or open the playground.'],

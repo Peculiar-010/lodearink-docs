@@ -3,4 +3,5 @@ node_modules/
 __pycache__/
 /generated-artifacts/
 /dist/
+/cloudflare/.dev.vars
 .DS_Store

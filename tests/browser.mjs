@@ -12,7 +12,7 @@ const es=JSON.parse(readFileSync('data/catalog.json','utf8')).endpoints;
 const check=async(name,fn)=>{await fn();console.log('PASS',name);};
 try {
   await check('all main pages load without runtime errors',async()=>{
-    for(const path of ['/','/docs','/playground','/status','/guides','/changelog','/404']){
+    for(const path of ['/','/docs','/playground','/status','/usage','/monitoring-setup','/guides','/changelog','/404']){
       const res=await page.goto(base+path,{waitUntil:'networkidle'});assert.equal(res.status(),200);
       await page.waitForSelector('.header');assert.ok(await page.locator('main').innerText());
     }
@@ -111,14 +111,23 @@ try {
     assert.ok((await page.locator('#generated-code').innerText()).includes('--form'));
     await page.click('[data-remove-field]');assert.equal(await page.locator('.multipart-row').count(),0);
   });
-  await check('all eighteen guides, changelog, status filters and mobile navigation work',async()=>{
+  await check('guides, shared monitoring setup states, and mobile navigation work',async()=>{
     await page.goto(base+'/guides',{waitUntil:'networkidle'});
     const hashes=await page.locator('#guides-root .guide-card').evaluateAll(links=>links.map(a=>a.hash));assert.equal(hashes.length,18);
     for(const hash of hashes){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector('.guide-body');assert.ok((await page.locator('.guide-body').innerText()).length>100);}
-    await page.goto(base+'/status',{waitUntil:'networkidle'});await page.selectOption('#status-filter','offline');
-    assert.ok(await page.locator('.status-row').count());assert.equal(await page.locator('.status-row .badge:not(.badge-offline)').count(),0);
+    await page.goto(base+'/status',{waitUntil:'networkidle'});
+    await page.waitForFunction(()=>document.querySelector('#status-result-count')?.textContent.includes('historical catalog records'));
+    assert.ok((await page.locator('#status-historical').innerText()).includes('not a monitoring snapshot'));
+    await page.selectOption('#status-coverage','discovery');await page.selectOption('#status-filter','unknown');
+    assert.ok(await page.locator('.obs-status-item').count());
+    await page.goto(base+'/usage',{waitUntil:'networkidle'});
+    assert.ok((await page.locator('#usage-message').innerText()).includes('Monitoring not connected'));
+    assert.ok((await page.locator('#usage-metrics').innerText()).includes('—'));
+    assert.doesNotMatch(await page.locator('#usage-metrics').innerText(),/\b0\b/);
+    await page.goto(base+'/monitoring-setup',{waitUntil:'networkidle'});
+    assert.ok((await page.locator('main').innerText()).includes('Keep the API repository private'));
     await page.setViewportSize({width:390,height:844});
-    for(const path of ['/','/docs','/docs/visionai/qwen/analyze','/playground','/playground/visionai/qwen/analyze','/status','/guides','/changelog']){
+    for(const path of ['/','/docs','/docs/visionai/qwen/analyze','/playground','/playground/visionai/qwen/analyze','/usage','/status','/monitoring-setup','/guides','/changelog']){
       await page.goto(base+path,{waitUntil:'networkidle'});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`Horizontal overflow at ${path}`);
     }
     await page.click('[data-mobile-toggle]');assert.equal(await page.locator('[data-mobile-toggle]').getAttribute('aria-expanded'),'true');await page.locator('[data-mobile-menu] a[href="/docs"]').click();await page.waitForURL(/\/docs$/);
