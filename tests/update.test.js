@@ -80,6 +80,10 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
     assert.equal(meta.get('og:image:width'),'1200');
     assert.equal(meta.get('og:image:height'),'630');
     assert.ok(meta.get('og:image:alt'));
+    assert.doesNotMatch(html.match(/<title>(.*?)<\/title>/)?.[1]||'',/[—–]/,`${page.path}: page title`);
+    for(const key of ['og:title','twitter:title','og:description','twitter:description']){
+      assert.doesNotMatch(meta.get(key)||'',/[—–]/,`${page.path}: ${key}`);
+    }
     for(const former of ['https://docs.lodearink.name.ng','https://lodearink-docs-o4dd.vercel.app']){
       if(former!==origin)assert.ok(!html.includes(former),`${page.path}: obsolete origin in HTML`);
     }

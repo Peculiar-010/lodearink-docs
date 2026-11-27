@@ -51,7 +51,7 @@ No production deployment or DNS change has been performed by the development set
 
 The original public pages referenced `docs.lodearink.name.ng`, where images returned 404 even though the PNGs existed on Vercel. A passing local build is **not** proof that the public site has received a correction.
 
-Open Graph cards use a pure-black background, very large centered text, and restrained blue, red, and green glow accents. Keep the subtle 3D treatment; do not use grid patterns or crowd the title.
+Open Graph cards use a pure-black background, very large centered text, and restrained blue, red, and green glow accents. Keep the subtle 3D treatment; do not use grid patterns or crowd the title. Avoid em-dash separators in generated page and social titles; use a vertical bar or plain wording instead.
 
 1. Run `npm run build && npm test`. The regression suite checks crawler-visible canonical/OG/Twitter URLs for every generated page, decompresses all unique PNGs, checks 1200×630 dimensions and verifies group exclusions.
 2. With the preview running, run `node scripts/check-sharing.mjs --preview "https://$REPLIT_DEV_DOMAIN"`. It checks delivery through the preview while requiring metadata to name the configured public origin. It does not claim to verify the published update.

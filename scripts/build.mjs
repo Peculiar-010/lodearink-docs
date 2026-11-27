@@ -17,14 +17,14 @@ if(siteUrl.protocol!=='https:'||siteUrl.username||siteUrl.password||siteUrl.path
 const origin=siteUrl.origin;
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pages=[
-  ['index','/','Lodearink API — Build more. Integrate faster.',site.description],
-  ['docs','/docs','API reference — Lodearink API','Explore API endpoints, request parameters, examples and availability.'],
-  ['playground','/playground','API playground — Lodearink API','Build requests, inspect live responses and copy client code.'],
-  ['status','/status','API status — Lodearink API','Endpoint availability from timestamped checks of the live API.'],
-  ['usage','/usage','API usage — Lodearink API','Shared API request volumes, response measurements and sampled activity.'],
-  ['guides','/guides','Developer guides — Lodearink API','Practical guides to requests, uploads, media and asynchronous tasks.'],
-  ['changelog','/changelog','Changelog — Lodearink API','Updates to the Lodearink API documentation.'],
-  ['404','/404','Page not found — Lodearink API','Return to the API reference or open the playground.'],
+  ['index','/','Lodearink API | Build more. Integrate faster.',site.description],
+  ['docs','/docs','API reference | Lodearink API','Explore API endpoints, request parameters, examples and availability.'],
+  ['playground','/playground','API playground | Lodearink API','Build requests, inspect live responses and copy client code.'],
+  ['status','/status','API status | Lodearink API','Endpoint availability from timestamped checks of the live API.'],
+  ['usage','/usage','API usage | Lodearink API','Shared API request volumes, response measurements and sampled activity.'],
+  ['guides','/guides','Developer guides | Lodearink API','Practical guides to requests, uploads, media and asynchronous tasks.'],
+  ['changelog','/changelog','Changelog | Lodearink API','Updates to the Lodearink API documentation.'],
+  ['404','/404','Page not found | Lodearink API','Return to the API reference or open the playground.'],
 ];
 // A removed endpoint must not survive as an old generated page.
 await rm(OUT,{recursive:true,force:true});
@@ -77,7 +77,7 @@ const templates={};
 for(const [name,path,title,description] of pages){
   const html=await readFile(join(ROOT,name+'.html'),'utf8');
   templates[name]=html;
-  const og=await image(name,{title:name==='index'?'Build more.\nIntegrate faster.':title.split(' — ')[0],description,path,category:'Lodearink API',count:catalog.endpoints.length});
+  const og=await image(name,{title:name==='index'?'Build more.\nIntegrate faster.':title.split(' | ')[0],description,path,category:'Lodearink API',count:catalog.endpoints.length});
   await pageFile(path,metadata(html,{title,description,path,image:og}));
   manifest.push({path,image:og,title});
 }
@@ -88,7 +88,7 @@ for(const endpoint of catalog.endpoints){
   for(const page of ['docs','playground']){
     const path=endpointLink(page,endpoint.path);
     const status=endpoint.status.state.replaceAll('-',' ');
-    const title=`${endpoint.path} — ${page==='docs'?'API reference':'Playground'} | Lodearink API`;
+    const title=`${endpoint.path} | ${page==='docs'?'API reference':'Playground'} | Lodearink API`;
     const description=`${endpoint.service||endpoint.category}. ${endpoint.methods.join(' / ')||'Method unconfirmed'}. Status: ${status}, checked ${checked}. ${page==='docs'?'Request parameters and examples.':'Send a live request.'}`;
     let html=metadata(templates[page],{title,description,path,image:og,alt:`${endpoint.path} · ${status} · ${checked}`});
     if(page==='docs'){
