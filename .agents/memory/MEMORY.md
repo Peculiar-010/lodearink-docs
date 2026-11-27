@@ -1,0 +1,1 @@
+- [Vercel fork synchronization](vercel-fork.md) — the hosting build source can differ from the workspace Git remote; verify both before claiming a pushed fix reached Vercel.
