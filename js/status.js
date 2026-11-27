@@ -1,4 +1,4 @@
-import { endpoints, categories, catalog, endpointLink } from './catalog.js';
+import { endpoints, categories, endpointLink } from './catalog.js';
 import { loadObservability, REFRESH_MS } from './observability.js';
 import { escapeHtml as esc, renderBadge, formatTime } from './ui.js';
 
@@ -36,25 +36,19 @@ function showMessage(state, body, tone = 'info', action = '') {
 }
 function renderMessage(value) {
   if (!value) {
-    showMessage('Connecting to shared monitoring','Reading scheduled endpoint health. No browser checks or probes are sent.','info');
+    showMessage('Loading status','Updating endpoint information.','info');
   } else if (value.state === 'setup-required') {
-    showMessage('Shared monitoring not connected','The catalog below is a historical discovery record only. It is not live monitoring and does not imply current uptime.','warning',
-      '<a class="obs-banner-action" href="/monitoring-setup">Monitoring setup guide →</a>');
+    message.replaceChildren();
   } else if (value.state === 'unavailable') {
-    showMessage('Snapshot unavailable',value.message || 'Shared monitoring could not be refreshed. Historical catalog data is not presented as current health.','error',
-      '<a class="obs-banner-action" href="/monitoring-setup">Monitoring setup guide →</a>');
+    showMessage('Status unavailable','Please try again later.','error');
   } else if (value.state === 'stale') {
-    showMessage('Snapshot is stale',value.message || 'The latest shared measurements are older than expected.','warning');
+    showMessage('Status may be out of date','Endpoint information was last updated a while ago.','warning');
   } else {
     message.replaceChildren();
   }
 }
-function renderCounts(rows, historical) {
+function renderCounts(rows) {
   const target = document.querySelector('#status-counts');
-  if (historical) {
-    target.innerHTML = `<span class="obs-count-chip"><strong>${num(rows.length)}</strong> catalog discovery records · historical</span>`;
-    return;
-  }
   if (!rows) {
     target.innerHTML = '';
     return;
@@ -91,26 +85,6 @@ function renderObservedItem(item) {
     : 'Passive health is not active uptime';
   return `<details class="obs-status-item"><summary class="obs-status-summary"><span class="obs-status-path"><code>${pathMarkup}</code><small>${esc(meta?.title || meta?.service || meta?.category || 'Public API endpoint')}${meta?.category ? ` · ${esc(meta.category)}` : ''}</small></span>${renderBadge(status)}<span class="obs-col obs-coverage-col">${esc(coverageLabel)}<small>${item.coverage === 'active' ? 'Scheduled check' : 'Normal traffic'}</small></span><span class="obs-col obs-latency-col">${esc(duration(latency))}<small>${validNumber(item.httpStatus) ? `HTTP ${esc(item.httpStatus)}` : 'No HTTP status'}</small></span><span class="obs-col obs-next-col">${esc(safeTime(item.nextCheckAt))}<small>Next scheduled</small></span></summary><div class="obs-status-detail"><div class="obs-detail-grid"><div class="obs-detail-cell"><span>Last scheduled check</span><strong>${esc(safeTime(item.lastCheckAt))}</strong></div><div class="obs-detail-cell"><span>Next scheduled check</span><strong>${esc(safeTime(item.nextCheckAt))}</strong></div><div class="obs-detail-cell"><span>Last normal request</span><strong>${passive ? `HTTP ${esc(num(passive.lastStatus))} · ${esc(safeTime(passive.lastSeenAt))}` : 'No passive observation'}</strong></div><div class="obs-detail-cell"><span>Observed active availability</span><strong>${esc(availability)} · ${esc(availabilityNote)}</strong></div><div class="obs-detail-cell"><span>Availability sample window</span><strong>${esc(observed.from ? safeTime(observed.from) : emDash)} → ${esc(observed.to ? safeTime(observed.to) : emDash)}</strong></div><div class="obs-detail-cell"><span>Conclusive active checks</span><strong>${esc(num(observed.sampleCount))} samples · ${esc(num(observed.successful))} successful · ${esc(num(observed.unsuccessful))} unsuccessful</strong></div><div class="obs-detail-cell"><span>Excluded observations</span><strong>${esc(num(observed.excluded))} network / validation / auth failures</strong></div><div class="obs-detail-cell"><span>Latest reason</span><strong>${esc(stateReason(item))}</strong></div><div class="obs-detail-cell"><span>Passive traffic · last hour</span><strong>${passive ? `${esc(num(passive.requests1h))} sampled requests · ${esc(rateText)} success · ${esc(duration(passive.avgResponseMs1h))} avg · ${esc(safeTime(passive.lastSeenAt))}` : 'No passive sample reported'}</strong></div></div><div class="obs-history"><h3>Recent scheduled-check history · newest first · up to 12</h3>${historyMarkup(item.history)}</div></div></details>`;
 }
-function renderHistorical() {
-  const matching = endpoints.filter(item => {
-    const term = search.trim().toLowerCase();
-    return (!category || item.category === category)
-      && (!active || active === 'unknown')
-      && (!coverage || coverage === 'discovery')
-      && (!term || `${item.path} ${item.title || ''} ${item.category || ''} ${item.service || ''}`.toLowerCase().includes(term));
-  });
-  renderCounts(matching,true);
-  document.querySelector('#status-historical').innerHTML = `<div class="obs-historical">Historical discovery inventory only — discovered ${esc(safeTime(catalog.discoveredAt))}. These records are not a monitoring snapshot, live state, current uptime or a downtime assessment.</div>`;
-  resultCount.textContent = `${num(matching.length)} historical catalog records`;
-  if (!matching.length) {
-    list.innerHTML = '<div class="obs-empty"><strong>No discovery records match</strong>Try a different route, category or filter.</div>';
-    return;
-  }
-  list.innerHTML = matching.map(item => {
-    const link = endpointLink('docs',item.path);
-    return `<details class="obs-status-item"><summary class="obs-status-summary"><span class="obs-status-path"><code>${esc(item.path)}</code><small>${esc(item.title || item.service || item.category)} · ${esc(item.category)}</small></span>${renderBadge('unknown')}<span class="obs-col obs-coverage-col">Discovery<small>Not monitored</small></span><span class="obs-col obs-latency-col">${esc(safeTime(catalog.discoveredAt))}<small>Catalog discovery</small></span><span class="obs-col obs-next-col">—<small>No scheduled check</small></span></summary><div class="obs-status-detail"><div class="obs-detail-grid"><div class="obs-detail-cell"><span>Record type</span><strong>Historical catalog discovery</strong></div><div class="obs-detail-cell"><span>Discovered</span><strong>${esc(safeTime(catalog.discoveredAt))}</strong></div><div class="obs-detail-cell"><span>Current status</span><strong>Not measured</strong></div><div class="obs-detail-cell"><span>Documentation</span><strong><a class="obs-link" href="${esc(link)}">View endpoint reference</a></strong></div></div><p class="obs-history-empty">There is no live check history, latency, availability sample or scheduled check for this historical record.</p></div></details>`;
-  }).join('');
-}
 function renderSnapshotRows(rows) {
   const term = search.trim().toLowerCase();
   const visible = rows.filter(item => {
@@ -120,7 +94,7 @@ function renderSnapshotRows(rows) {
       && (!coverage || item.coverage === coverage)
       && (!term || `${item.path} ${meta?.title || ''} ${meta?.category || ''} ${meta?.service || ''}`.toLowerCase().includes(term));
   });
-  renderCounts(rows,false);
+  renderCounts(rows);
   document.querySelector('#status-historical').replaceChildren();
   resultCount.textContent = `${num(visible.length)} of ${num(rows.length)} monitored endpoints`;
   list.innerHTML = visible.length
@@ -131,32 +105,24 @@ function render(value) {
   result = value;
   renderMessage(value);
   const snapshot = value?.snapshot;
-  const setupMissing = value?.state === 'setup-required' || snapshot?.monitoring?.state === 'setup-required';
-  if (setupMissing) {
-    if (!coverageSelect.querySelector('option[value="discovery"]')) coverageSelect.insertAdjacentHTML('beforeend','<option value="discovery">Historical discovery</option>');
-    renderHistorical();
-  } else if (Array.isArray(snapshot?.monitoring?.endpoints)) {
-    coverageSelect.querySelector('option[value="discovery"]')?.remove();
-    if (coverage === 'discovery') {
-      coverage = '';
-      coverageSelect.value = '';
-    }
-    const rows = snapshot.monitoring.endpoints;
-    renderSnapshotRows(rows);
-  } else {
-    coverageSelect.querySelector('option[value="discovery"]')?.remove();
-    if (coverage === 'discovery') {
-      coverage = '';
-      coverageSelect.value = '';
-    }
-    renderCounts(null,false);
+  const hasSnapshot = Array.isArray(snapshot?.monitoring?.endpoints);
+  const controls = root.querySelector('.obs-controls');
+  const sectionHead = root.querySelector('.obs-section-head');
+  if (!hasSnapshot) {
+    controls.hidden = true;
+    sectionHead.hidden = true;
+    document.querySelector('#status-counts').replaceChildren();
     document.querySelector('#status-historical').replaceChildren();
-    resultCount.textContent = 'No current monitoring records';
-    list.innerHTML = `<div class="obs-empty"><strong>Shared monitoring data is unavailable</strong>Catalog entries are not presented as current endpoint health. Retry the snapshot or consult the <a class="obs-link" href="/monitoring-setup">monitoring setup guide</a>.</div>`;
+    resultCount.textContent = 'No live status yet';
+    list.innerHTML = '<div class="obs-empty"><strong>Live status is not available yet</strong>Endpoint information will appear here when available.</div>';
+  } else {
+    controls.hidden = false;
+    sectionHead.hidden = false;
+    renderSnapshotRows(snapshot.monitoring.endpoints);
   }
   freshness.innerHTML = snapshot
     ? `<strong>Snapshot ${esc(safeTime(snapshot.monitoring?.updatedAt || snapshot.generatedAt))}</strong>${validNumber(value.ageSeconds) ? `Age ${esc(num(value.ageSeconds))}s` : ''}`
-    : `<strong>${setupMissing ? 'Historical inventory only' : 'No monitoring snapshot'}</strong>`;
+     : '<strong>Waiting for live status</strong>';
 }
 async function refresh(force = false) {
   if (disposed || running || document.hidden) return;
@@ -174,7 +140,7 @@ async function refresh(force = false) {
     running = false;
     if (!disposed) {
       refreshButton.disabled = false;
-      refreshButton.textContent = 'Refresh snapshot';
+       refreshButton.textContent = 'Refresh';
     }
   }
 }

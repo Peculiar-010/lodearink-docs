@@ -51,7 +51,9 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
   const manifest=JSON.parse(readFileSync(new URL('../dist/share-manifest.json',import.meta.url),'utf8'));
   const origin=new URL(site.url).origin;
   assert.equal(manifest.origin,origin);
-  assert.equal(manifest.pages.length,inventory.length*2+9);
+  assert.equal(manifest.pages.length,inventory.length*2+8);
+  assert.equal(manifest.pages.some(page=>page.path==='/monitoring-setup'),false);
+  assert.equal(existsSync(new URL('../dist/monitoring-setup.html',import.meta.url)),false);
   const decoded=new Set();
   for(const page of manifest.pages){
     const filename=page.path==='/'?'index':page.path.slice(1);
@@ -77,7 +79,11 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
     if(!decoded.has(page.image)){inspectPng(buffer);decoded.add(page.image);}
     if(page.endpoint){assert.ok(html.includes(page.endpoint));assert.ok(html.includes('Status: '+page.status.state.replaceAll('-',' ')));}
   }
-  assert.equal(decoded.size,inventory.length+9);
+  assert.equal(decoded.size,inventory.length+8);
+  for(const filename of ['../js/status.js','../js/usage.js']){
+    const source=readFileSync(new URL(filename,import.meta.url),'utf8');
+    assert.doesNotMatch(source,/monitoring-setup|setup guide/i);
+  }
   const sitemap=readFileSync(new URL('../dist/sitemap.xml',import.meta.url),'utf8');
   const locations=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
   assert.equal(locations.length,manifest.pages.length-1);

@@ -16,7 +16,7 @@ export async function loadObservability({force=false,signal,fetcher=fetch}={}){
       if(!response.ok)throw new Error('Monitoring configuration could not be loaded.');
       configuration=await response.json();
     }
-    if(!configuration.snapshotUrl)return {state:'setup-required',snapshot:null,message:'Cloudflare monitoring is not connected. No usage totals have been collected by this site.'};
+    if(!configuration.snapshotUrl)return {state:'setup-required',snapshot:null,message:'Live data is not available yet.'};
     const url=new URL(configuration.snapshotUrl);
     if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||url.pathname!=='/v1/snapshot')throw new Error('Configure a public HTTPS Worker URL ending in /v1/snapshot. Never put a token in this URL.');
     const response=await fetcher(url.href,{signal,credentials:'omit',cache:force?'no-cache':undefined});

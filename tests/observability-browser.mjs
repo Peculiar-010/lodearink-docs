@@ -37,22 +37,22 @@ try{
   assert.match(await page.locator('#usage-endpoints').innerText(),/\/health/);
   assert.match(await page.locator('#usage-recent').innerText(),/1:2/);
   assert.match(await page.locator('#usage-chart').innerText(),/No observed request-volume samples/);
-  for(const width of [390,768,1280]){
+  assert.equal(await page.locator('a[href*="monitoring-setup"]').count(),0);
+  for(const width of [390,1280]){
     await page.setViewportSize({width,height:900});
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`Usage overflow at ${width}px`);
   }
   await page.goto(base+'/status',{waitUntil:'networkidle'});
   await page.waitForSelector('.obs-status-item');
-  assert.match(await page.locator('#status-counts').innerText(),/1 active checks/);
-  assert.match(await page.locator('#status-counts').innerText(),/1 passive only/);
+  assert.match(await page.locator('#status-counts').innerText(),/1\s+active checks/);
+  assert.match(await page.locator('#status-counts').innerText(),/1\s+passive only/);
   assert.match(await page.locator('.obs-status-list').innerText(),/HTTP 200/);
-  for(const width of [390,768,1280]){
+  assert.equal(await page.locator('a[href*="monitoring-setup"]').count(),0);
+  for(const width of [390,1280]){
     await page.setViewportSize({width,height:900});
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`Status overflow at ${width}px`);
   }
-  await page.goto(base+'/monitoring-setup',{waitUntil:'networkidle'});
-  assert.match(await page.locator('main').innerText(),/Keep the API repository private/);
-  assert.ok(hosts.every(host=>host==='127.0.0.1'||host==='localhost'||host===new URL(base).hostname),`Unexpected outbound request: ${hosts.join(', ')}`);
+  assert.ok(!hosts.some(host=>host==='api.example'||host==='api.lodearink.name.ng'),`Unexpected API request: ${hosts.join(', ')}`);
   assert.deepEqual(errors,[]);
-  console.log('PASS monitoring pages render setup and shared snapshots responsively without external API requests');
+  console.log('PASS Usage and Status pages render snapshots responsively without private setup instructions or API probes');
 }finally{await browser.close();}

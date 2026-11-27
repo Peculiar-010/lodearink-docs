@@ -9,7 +9,7 @@ test('missing configuration is an explicit setup state with no invented data',as
   assert.equal(calls,1);
   assert.equal(result.state,'setup-required');
   assert.equal(result.snapshot,null);
-  assert.match(result.message,/No usage totals/);
+  assert.equal(result.message,'Live data is not available yet.');
 });
 test('malformed snapshots and stale snapshots are distinguished',()=>{
   assert.throws(()=>snapshotState({schemaVersion:1,generatedAt:'bad',usage:{},monitoring:{endpoints:[]}}));

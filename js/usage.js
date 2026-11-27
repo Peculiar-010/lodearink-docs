@@ -36,19 +36,17 @@ function textMessage(state, body, tone = 'info', action = '') {
 function renderStateNotice(value) {
   const state = value?.state;
   if (!value) {
-    textMessage('Connecting to shared measurements', 'Reading the public snapshot. This page never sends API probes.', 'info');
+    textMessage('Loading request data', 'Updating request totals.', 'info');
     return;
   }
   if (state === 'setup-required') {
-    textMessage('Monitoring not connected', value.message || 'No usage totals have been collected by this site.', 'warning',
-      '<a class="obs-banner-action" href="/monitoring-setup">Monitoring setup guide →</a>');
+    message.replaceChildren();
   } else if (state === 'unavailable') {
-    textMessage('Snapshot unavailable', value.message || 'Shared measurements could not be refreshed.', 'error',
-      '<a class="obs-banner-action" href="/monitoring-setup">Monitoring setup guide →</a>');
+    textMessage('Request data unavailable', 'Please try again later.', 'error');
   } else if (state === 'stale') {
-    textMessage('Snapshot is stale', value.message || 'These shared measurements are older than expected.', 'warning');
+    textMessage('Data may be out of date', 'Request totals were last updated a while ago.', 'warning');
   } else if (state === 'waiting-for-traffic') {
-    textMessage('Waiting for observed traffic', value.message || 'Collection starts after the adapter receives its first real request.', 'info');
+    textMessage('Waiting for requests', 'No request totals are available yet.', 'info');
   } else {
     message.replaceChildren();
   }
@@ -59,10 +57,10 @@ function metric(label, value, note) {
 function renderMetrics(windowData) {
   if (!windowData) {
     metrics.innerHTML = [
-      metric('Requests',dash,'No connected snapshot'),
-      metric('Success · 200–399',dash,'No connected snapshot'),
-      metric('Client errors · 400–499',dash,'No connected snapshot'),
-      metric('Server errors · 500–599',dash,'No connected snapshot'),
+      metric('Requests',dash,'No live data'),
+      metric('Success · 200–399',dash,'No live data'),
+      metric('Client errors · 400–499',dash,'No live data'),
+      metric('Server errors · 500–599',dash,'No live data'),
       metric('Avg response to headers',dash,'Weighted mean'),
     ].join('');
     return;
@@ -78,7 +76,7 @@ function renderMetrics(windowData) {
 }
 function renderEndpoints(windowData) {
   if (!windowData) {
-    endpointList.innerHTML = `<div class="obs-empty"><strong>No usage totals yet</strong>Connect monitoring to see genuinely observed endpoint counts.<br><a class="obs-link" href="/monitoring-setup">Read the monitoring setup guide</a></div>`;
+    endpointList.innerHTML = `<div class="obs-empty"><strong>No live request data yet</strong>Endpoint totals will appear here when available.</div>`;
     return;
   }
   const term = endpointSearch.trim().toLowerCase();
@@ -107,7 +105,7 @@ function renderEndpoints(windowData) {
 function renderRecent(snapshot) {
   const observations = Array.isArray(snapshot?.usage?.recent) ? snapshot.usage.recent.slice(0,24) : [];
   if (!result?.snapshot) {
-    recentList.innerHTML = `<div class="obs-empty"><strong>Sampled activity unavailable</strong>Recent observations appear after the shared collector is connected.</div>`;
+    recentList.innerHTML = `<div class="obs-empty"><strong>No recent requests yet</strong>Recent activity will appear here when available.</div>`;
     return;
   }
   if (!observations.length) {
@@ -136,8 +134,8 @@ function render(value) {
   renderEndpoints(windowData);
   renderRecent(snapshot);
   freshness.innerHTML = snapshot
-    ? `<strong>Updated ${esc(safeDate(snapshot.usage?.updatedAt || snapshot.generatedAt))}</strong>${Number.isFinite(value.ageSeconds) ? `Snapshot age ${esc(number(value.ageSeconds))}s` : ''}`
-    : `<strong>${value?.state === 'setup-required' ? 'Not configured' : 'No snapshot available'}</strong>`;
+     ? `<strong>Updated ${esc(safeDate(snapshot.usage?.updatedAt || snapshot.generatedAt))}</strong>${Number.isFinite(value.ageSeconds) ? `Updated ${esc(number(value.ageSeconds))}s ago` : ''}`
+     : `<strong>${value?.state === 'setup-required' ? 'Waiting for live data' : 'No data available'}</strong>`;
   if (snapshot) {
     const data = windowData;
     if (data) {
@@ -149,7 +147,7 @@ function render(value) {
     }
   } else {
     disposeTrafficChart(chart);
-    chart.textContent=value?.state === 'setup-required' ? 'No live traffic data is connected.' : 'Shared traffic snapshot unavailable.';
+     chart.textContent=value?.state === 'setup-required' ? 'No live request data yet.' : 'Request data is temporarily unavailable.';
   }
 }
 async function refresh(force = false) {
@@ -168,7 +166,7 @@ async function refresh(force = false) {
     running = false;
     if (!disposed) {
       refreshButton.disabled = false;
-      refreshButton.textContent = 'Refresh snapshot';
+       refreshButton.textContent = 'Refresh';
     }
   }
 }

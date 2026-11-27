@@ -15,13 +15,13 @@
   <main class="container observability" id="usage-root" aria-labelledby="usage-title">
     <div class="obs-heading">
       <div class="page-top">
-        <div class="eyebrow">Usage / shared measurements</div>
+         <div class="eyebrow">API / request usage</div>
         <h1 id="usage-title">Request usage.</h1>
-        <p>Aggregate traffic observed by the shared API adapter. No private request content is collected here.</p>
+         <p>Request volume, response times and the most-used endpoints.</p>
       </div>
       <div class="obs-heading-actions">
-        <div class="obs-freshness" id="usage-freshness" aria-live="polite">Waiting for snapshot</div>
-        <button class="button button-ghost obs-refresh" id="usage-refresh" type="button">Refresh snapshot</button>
+        <div class="obs-freshness" id="usage-freshness" aria-live="polite">Waiting for data</div>
+        <button class="button button-ghost obs-refresh" id="usage-refresh" type="button">Refresh</button>
       </div>
     </div>
     <div id="usage-message" aria-live="polite"></div>
@@ -39,7 +39,7 @@
         </div>
       </div>
       <section class="panel obs-panel" aria-label="Traffic volume chart">
-        <div class="obs-chart" id="usage-chart" role="img" aria-label="Observed request volume over selected window">Loading shared traffic snapshot…</div>
+          <div class="obs-chart" id="usage-chart" role="img" aria-label="Observed request volume over selected window">Loading request data…</div>
         <p class="obs-chart-note">Five-minute observed buckets; the first and current buckets may be partial. Missing buckets are not backfilled as zero.</p>
       </section>
       <div class="obs-content-grid">
@@ -48,11 +48,11 @@
             <label class="obs-filter-note" for="usage-endpoint-search">Filter this list</label>
           </div>
           <div class="obs-panel" style="padding-top:0"><input class="control" id="usage-endpoint-search" type="search" placeholder="Search paths or service names…" aria-label="Filter endpoint list by path or service" style="width:100%;font-size:11px"></div>
-          <div id="usage-endpoints"><div class="obs-empty">Waiting for shared measurements.</div></div>
+          <div id="usage-endpoints"><div class="obs-empty">Waiting for request data.</div></div>
         </section>
         <section class="panel obs-list" aria-labelledby="usage-recent-title">
           <div class="obs-panel obs-section-head"><div><h2 id="usage-recent-title">Recent sampled activity</h2><p>Sampled observations, not a complete request log.</p></div></div>
-          <div id="usage-recent"><div class="obs-empty">Waiting for shared measurements.</div></div>
+          <div id="usage-recent"><div class="obs-empty">Waiting for request data.</div></div>
         </section>
       </div>
       <p class="workspace-note">Usage includes bots and all non-monitor clients; it is not a count of people. Recent activity is sampled. Request bodies, query strings, headers, credentials, IP addresses and dynamic resource identifiers are never shown.</p>
