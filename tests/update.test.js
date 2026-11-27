@@ -47,9 +47,16 @@ test('the sharing renderer escapes markup and uses only supplied availability',(
   assert.ok(svg.includes('offline'));assert.ok(svg.includes('2026-11-27'));
   assert.ok(svg.includes('width="1200"'));assert.ok(svg.includes('height="630"'));
   assert.doesNotMatch(svg,/<pattern|grid/i);
-  assert.match(svg,/font-size="62"/);
+  assert.match(svg,/<rect width="1200" height="630" fill="#000"\/>/);
+  assert.match(svg,/<text x="600" y="258" text-anchor="middle"[^>]*font-size="88"/);
+  assert.match(svg,/id="blueAccent"/);
+  assert.match(svg,/id="redAccent"/);
+  assert.match(svg,/id="greenAccent"/);
   assert.match(svg,/filter id="shadow"/);
   assert.doesNotMatch(createOgSvg({path:'/'}),/<text[^>]*>\/<\/text>/);
+  const homeSvg=createOgSvg({title:'Build more.\nIntegrate faster.',path:'/'});
+  assert.ok(homeSvg.includes('Integrate faster.'));
+  assert.ok(!homeSvg.includes('Integrate…'));
 });
 test('built endpoint HTML exposes individual social metadata without JavaScript',()=>{
   const manifest=JSON.parse(readFileSync(new URL('../dist/share-manifest.json',import.meta.url),'utf8'));

@@ -32,19 +32,17 @@ function wrap(value, maxChars, maxLines = 2) {
   return lines;
 }
 
-function textLines(value, { x, y, size, lineHeight, maxChars, maxLines, fill, family, weight = 400 }) {
+function textLines(value, { x, y, size, lineHeight, maxChars, maxLines, fill, family, weight = 400, anchor }) {
   return wrap(value, maxChars, maxLines).map((line, index) =>
-    `<text x="${x}" y="${y + index * lineHeight}" fill="${fill}" font-family="${family}" font-size="${size}" font-weight="${weight}">${escapeXml(line)}</text>`
+    `<text x="${x}" y="${y + index * lineHeight}"${anchor ? ` text-anchor="${anchor}"` : ""} fill="${fill}" font-family="${family}" font-size="${size}" font-weight="${weight}">${escapeXml(line)}</text>`
   ).join("");
 }
 
 function statusColor(status) {
   const value = String(status || "").toLowerCase().trim();
-  if (/online|healthy|available|operational/.test(value)) return "#70dfb2";
-  if (/offline|down|unavailable/.test(value)) return "#ff858d";
-  if (/degraded|warning|partial/.test(value)) return "#e8c879";
-  if (/checking|pending|unknown/.test(value)) return "#a6c8d4";
-  return "#a6c8d4";
+  if (/online|healthy|available|operational/.test(value)) return "#56df9a";
+  if (/offline|down|unavailable|degraded|warning|partial/.test(value)) return "#ff5967";
+  return "#6f9cff";
 }
 
 /**
@@ -61,13 +59,12 @@ export function createOgSvg({
   checkedAt,
   count,
 } = {}) {
-  const displayTitle = textLines(title, { x: 82, y: 245, size: 62, lineHeight: 70, maxChars: 20, maxLines: 2, fill: "#f3f3ef", family: "DejaVu Sans", weight: 700 });
+  const displayTitle = textLines(title, { x: 600, y: 258, size: 88, lineHeight: 92, maxChars: 18, maxLines: 2, fill: "#f3f3ef", family: "DejaVu Sans", weight: 700, anchor: "middle" });
   const showPath = Boolean(path && path !== "/");
   const displayPath = showPath
-    ? textLines(path, { x: 84, y: 418, size: 19, lineHeight: 26, maxChars: 48, maxLines: 2, fill: "#c5cecc", family: "DejaVu Sans Mono" })
+    ? textLines(path, { x: 600, y: 422, size: 19, lineHeight: 26, maxChars: 48, maxLines: 2, fill: "#c5cecc", family: "DejaVu Sans Mono", anchor: "middle" })
     : "";
-  const pathAccent = showPath ? '<rect x="82" y="389" width="4" height="43" rx="2" fill="#c6d3ca"/>' : "";
-  const displayDescription = textLines(description, { x: 84, y: 489, size: 17, lineHeight: 24, maxChars: 66, maxLines: 2, fill: "#9da9a8", family: "DejaVu Sans" });
+  const displayDescription = textLines(description, { x: 600, y: 485, size: 17, lineHeight: 24, maxChars: 66, maxLines: 2, fill: "#9da9a8", family: "DejaVu Sans", anchor: "middle" });
   const categoryLabel = escapeXml(String(category || "Lodearink API").toUpperCase());
   const methodList = (Array.isArray(methods) ? methods : String(methods || "").split(/[,\s]+/))
     .map(method => String(method).trim().toUpperCase()).filter(Boolean).slice(0, 4);
@@ -94,11 +91,14 @@ export function createOgSvg({
     : "";
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="${escapeXml(title)}">
 <defs>
-  <linearGradient id="canvas" x1="0" y1="0" x2="1" y2="1">
-    <stop stop-color="#090b0c"/><stop offset=".58" stop-color="#0d1011"/><stop offset="1" stop-color="#111515"/>
-  </linearGradient>
-  <radialGradient id="ambient" cx="75%" cy="43%" r="60%">
-    <stop stop-color="#728d85" stop-opacity=".14"/><stop offset="1" stop-color="#728d85" stop-opacity="0"/>
+  <radialGradient id="blueAccent">
+    <stop stop-color="#477dff" stop-opacity=".16"/><stop offset="1" stop-color="#477dff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="redAccent">
+    <stop stop-color="#ff5264" stop-opacity=".13"/><stop offset="1" stop-color="#ff5264" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="greenAccent">
+    <stop stop-color="#48dc91" stop-opacity=".14"/><stop offset="1" stop-color="#48dc91" stop-opacity="0"/>
   </radialGradient>
   <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
     <stop stop-color="#313a38"/><stop offset=".48" stop-color="#1d2423"/><stop offset="1" stop-color="#111615"/>
@@ -116,9 +116,10 @@ export function createOgSvg({
     <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
 </defs>
-<rect width="1200" height="630" fill="url(#canvas)"/>
-<rect width="1200" height="630" fill="url(#ambient)"/>
-<path d="M0 1H1200" stroke="#d6e3dc" stroke-opacity=".28"/>
+<rect width="1200" height="630" fill="#000"/>
+<circle cx="1085" cy="205" r="132" fill="url(#blueAccent)"/>
+<circle cx="1144" cy="173" r="74" fill="url(#redAccent)"/>
+<circle cx="1048" cy="293" r="100" fill="url(#greenAccent)"/>
 
 <g transform="translate(82 62)">
   <rect width="38" height="38" rx="11" fill="#1b211f" stroke="#63736a" stroke-opacity=".7"/>
@@ -126,12 +127,12 @@ export function createOgSvg({
   <text x="52" y="26" fill="#ecefea" font-family="DejaVu Sans" font-size="19" font-weight="700" letter-spacing=".2">LODEARINK</text>
   <text x="174" y="26" fill="#87918b" font-family="DejaVu Sans Mono" font-size="11" letter-spacing="1.8">API WORKSPACE</text>
 </g>
-<text x="84" y="151" fill="#abb8af" font-family="DejaVu Sans Mono" font-size="12" font-weight="700" letter-spacing="1.5">${categoryLabel}</text>
+<text x="600" y="151" text-anchor="middle" fill="#abb8af" font-family="DejaVu Sans Mono" font-size="12" font-weight="700" letter-spacing="1.5">${categoryLabel}</text>
 ${methodsMarkup}
 
-<g opacity=".95">
-  <ellipse cx="1002" cy="414" rx="186" ry="26" fill="#000" opacity=".5" filter="url(#shadow)"/>
-  <g filter="url(#shadow)" transform="translate(835 211) rotate(-8 150 130)">
+<g opacity=".88">
+  <ellipse cx="1082" cy="328" rx="105" ry="16" fill="#000" opacity=".5" filter="url(#shadow)"/>
+  <g filter="url(#shadow)" transform="translate(985 158) scale(.62) rotate(-8 150 130)">
     <path d="M22 37 173 6l122 56-151 37z" fill="#3b4641" stroke="url(#edge)"/>
     <path d="m144 99 151-37v165l-151 39z" fill="#141a18" stroke="#5e6b63" stroke-opacity=".46"/>
     <path d="m22 37 122 62v167L22 198z" fill="url(#glass)" stroke="#718077" stroke-opacity=".34"/>
@@ -146,7 +147,7 @@ ${methodsMarkup}
 </g>
 
 ${displayTitle}
-${pathAccent}${displayPath}
+${displayPath}
 ${displayDescription}
 ${badge}${checked}${countMarkup}
 <path d="M82 605H1118" stroke="#a6b3aa" stroke-opacity=".15"/>
