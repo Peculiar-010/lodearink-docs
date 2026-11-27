@@ -160,14 +160,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "YouTube Music",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/playstore/search?q=Replit",
+        "url": "https://api.lodearink.name.ng/playstore/search?q=YouTube+Music",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -176,7 +176,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/playstore/search?q=Replit",
+          "url": "https://api.lodearink.name.ng/playstore/search?q=YouTube+Music",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -2409,7 +2409,7 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Aria",
           "description": "Query parameter",
           "source": "maintainer"
         },
@@ -2432,7 +2432,7 @@
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/tts/voices?language=en&gender=female&country=US&q=Replit&limit=2&offset=0",
+        "url": "https://api.lodearink.name.ng/tts/voices?language=en&gender=female&country=US&q=Aria&limit=2&offset=0",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -2441,7 +2441,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/tts/voices?language=en&gender=female&country=US&q=Replit&limit=2&offset=0",
+          "url": "https://api.lodearink.name.ng/tts/voices?language=en&gender=female&country=US&q=Aria&limit=2&offset=0",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -2500,14 +2500,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Samantha",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/tts/voices/search?q=Replit",
+        "url": "https://api.lodearink.name.ng/tts/voices/search?q=Samantha",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -2516,7 +2516,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/tts/voices/search?q=Replit",
+          "url": "https://api.lodearink.name.ng/tts/voices/search?q=Samantha",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -3715,14 +3715,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "vercel/next.js",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/github/repos?q=Replit",
+        "url": "https://api.lodearink.name.ng/github/repos?q=vercel%2Fnext.js",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -3731,7 +3731,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/github/repos?q=Replit",
+          "url": "https://api.lodearink.name.ng/github/repos?q=vercel%2Fnext.js",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -3934,14 +3934,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "torvalds",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/github/users?q=Replit",
+        "url": "https://api.lodearink.name.ng/github/users?q=torvalds",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -3950,7 +3950,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/github/users?q=Replit",
+          "url": "https://api.lodearink.name.ng/github/users?q=torvalds",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -4433,7 +4433,7 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "video.js",
           "description": "Query parameter",
           "source": "maintainer"
         },
@@ -4448,7 +4448,7 @@
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/npm/search?q=Replit&limit=2",
+        "url": "https://api.lodearink.name.ng/npm/search?q=video.js&limit=2",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -4457,7 +4457,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/npm/search?q=Replit&limit=2",
+          "url": "https://api.lodearink.name.ng/npm/search?q=video.js&limit=2",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -9272,7 +9272,7 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Dune Part Two poster",
           "description": "Query parameter",
           "source": "maintainer"
         },
@@ -9287,7 +9287,7 @@
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/bing/images?q=Replit&limit=2",
+        "url": "https://api.lodearink.name.ng/bing/images?q=Dune+Part+Two+poster&limit=2",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -9296,7 +9296,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/bing/images?q=Replit&limit=2",
+          "url": "https://api.lodearink.name.ng/bing/images?q=Dune+Part+Two+poster&limit=2",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -9351,14 +9351,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Zendaya film still",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/bing/images/random?q=Replit",
+        "url": "https://api.lodearink.name.ng/bing/images/random?q=Zendaya+film+still",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -9367,7 +9367,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/bing/images/random?q=Replit",
+          "url": "https://api.lodearink.name.ng/bing/images/random?q=Zendaya+film+still",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -9421,14 +9421,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Pedro Pascal portrait",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/bing/images/random.json?q=Replit",
+        "url": "https://api.lodearink.name.ng/bing/images/random.json?q=Pedro+Pascal+portrait",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -9437,7 +9437,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/bing/images/random.json?q=Replit",
+          "url": "https://api.lodearink.name.ng/bing/images/random.json?q=Pedro+Pascal+portrait",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -9491,7 +9491,7 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Studio Ghibli landscapes",
           "description": "Query parameter",
           "source": "maintainer"
         },
@@ -9506,7 +9506,7 @@
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/bing/images/zip?q=Replit&limit=2",
+        "url": "https://api.lodearink.name.ng/bing/images/zip?q=Studio+Ghibli+landscapes&limit=2",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -9515,7 +9515,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/bing/images/zip?q=Replit&limit=2",
+          "url": "https://api.lodearink.name.ng/bing/images/zip?q=Studio+Ghibli+landscapes&limit=2",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -9570,14 +9570,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Christopher Nolan filmography",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/bing/web?q=Replit",
+        "url": "https://api.lodearink.name.ng/bing/web?q=Christopher+Nolan+filmography",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -9586,7 +9586,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/bing/web?q=Replit",
+          "url": "https://api.lodearink.name.ng/bing/web?q=Christopher+Nolan+filmography",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -9640,14 +9640,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Interstellar official trailer",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/bing/web/links?q=Replit",
+        "url": "https://api.lodearink.name.ng/bing/web/links?q=Interstellar+official+trailer",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -9656,7 +9656,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/bing/web/links?q=Replit",
+          "url": "https://api.lodearink.name.ng/bing/web/links?q=Interstellar+official+trailer",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -9710,14 +9710,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Arrival movie review",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/bing/web/snippets?q=Replit",
+        "url": "https://api.lodearink.name.ng/bing/web/snippets?q=Arrival+movie+review",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -9726,7 +9726,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/bing/web/snippets?q=Replit",
+          "url": "https://api.lodearink.name.ng/bing/web/snippets?q=Arrival+movie+review",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -9780,14 +9780,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "The Matrix plot summary",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/bing/web/summary?q=Replit",
+        "url": "https://api.lodearink.name.ng/bing/web/summary?q=The+Matrix+plot+summary",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -9796,7 +9796,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/bing/web/summary?q=Replit",
+          "url": "https://api.lodearink.name.ng/bing/web/summary?q=The+Matrix+plot+summary",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -9850,14 +9850,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Spider-Man Across the Spider-Verse",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/bing/web/titles?q=Replit",
+        "url": "https://api.lodearink.name.ng/bing/web/titles?q=Spider-Man+Across+the+Spider-Verse",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -9866,7 +9866,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/bing/web/titles?q=Replit",
+          "url": "https://api.lodearink.name.ng/bing/web/titles?q=Spider-Man+Across+the+Spider-Verse",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -9920,14 +9920,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Best science fiction films",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/bing/web/top?q=Replit",
+        "url": "https://api.lodearink.name.ng/bing/web/top?q=Best+science+fiction+films",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -9936,7 +9936,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/bing/web/top?q=Replit",
+          "url": "https://api.lodearink.name.ng/bing/web/top?q=Best+science+fiction+films",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -9990,14 +9990,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Blade Runner 2049 poster",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/pinterest/search?q=Replit",
+        "url": "https://api.lodearink.name.ng/pinterest/search?q=Blade+Runner+2049+poster",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -10006,7 +10006,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/pinterest/search?q=Replit",
+          "url": "https://api.lodearink.name.ng/pinterest/search?q=Blade+Runner+2049+poster",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -10060,7 +10060,7 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Dune Part Two discussion",
           "description": "Query parameter",
           "source": "maintainer"
         },
@@ -10091,7 +10091,7 @@
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/reddit/search?q=Replit&subreddit=programming&sort=hot&limit=2",
+        "url": "https://api.lodearink.name.ng/reddit/search?q=Dune+Part+Two+discussion&subreddit=programming&sort=hot&limit=2",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -10100,7 +10100,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/reddit/search?q=Replit&subreddit=programming&sort=hot&limit=2",
+          "url": "https://api.lodearink.name.ng/reddit/search?q=Dune+Part+Two+discussion&subreddit=programming&sort=hot&limit=2",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -10376,14 +10376,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Interstellar trailer",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/ytsearch?q=Replit",
+        "url": "https://api.lodearink.name.ng/ytsearch?q=Interstellar+trailer",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -10392,7 +10392,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/ytsearch?q=Replit",
+          "url": "https://api.lodearink.name.ng/ytsearch?q=Interstellar+trailer",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -10446,14 +10446,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "MrBeast",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/ytsearch/channel?q=Replit",
+        "url": "https://api.lodearink.name.ng/ytsearch/channel?q=MrBeast",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -10462,7 +10462,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/ytsearch/channel?q=Replit",
+          "url": "https://api.lodearink.name.ng/ytsearch/channel?q=MrBeast",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -10516,14 +10516,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "The Dark Knight trailer",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/ytsearch/links?q=Replit",
+        "url": "https://api.lodearink.name.ng/ytsearch/links?q=The+Dark+Knight+trailer",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -10532,7 +10532,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/ytsearch/links?q=Replit",
+          "url": "https://api.lodearink.name.ng/ytsearch/links?q=The+Dark+Knight+trailer",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -10645,14 +10645,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Spider-Man No Way Home trailer",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/ytsearch/thumb?q=Replit",
+        "url": "https://api.lodearink.name.ng/ytsearch/thumb?q=Spider-Man+No+Way+Home+trailer",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -10661,7 +10661,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/ytsearch/thumb?q=Replit",
+          "url": "https://api.lodearink.name.ng/ytsearch/thumb?q=Spider-Man+No+Way+Home+trailer",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -10715,14 +10715,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "The Lord of the Rings",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/ytsearch/titles?q=Replit",
+        "url": "https://api.lodearink.name.ng/ytsearch/titles?q=The+Lord+of+the+Rings",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -10731,7 +10731,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/ytsearch/titles?q=Replit",
+          "url": "https://api.lodearink.name.ng/ytsearch/titles?q=The+Lord+of+the+Rings",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -10785,14 +10785,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Oppenheimer official trailer",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/ytsearch/video?q=Replit",
+        "url": "https://api.lodearink.name.ng/ytsearch/video?q=Oppenheimer+official+trailer",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -10801,7 +10801,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/ytsearch/video?q=Replit",
+          "url": "https://api.lodearink.name.ng/ytsearch/video?q=Oppenheimer+official+trailer",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -12450,14 +12450,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Arrival film trailer",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/ytdl/search?q=Replit",
+        "url": "https://api.lodearink.name.ng/ytdl/search?q=Arrival+film+trailer",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -12466,7 +12466,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/ytdl/search?q=Replit",
+          "url": "https://api.lodearink.name.ng/ytdl/search?q=Arrival+film+trailer",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -13118,14 +13118,14 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Arsenal",
           "description": "Query parameter",
           "source": "maintainer"
         }
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/football/search?q=Replit",
+        "url": "https://api.lodearink.name.ng/football/search?q=Arsenal",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -13134,7 +13134,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/football/search?q=Replit",
+          "url": "https://api.lodearink.name.ng/football/search?q=Arsenal",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -13503,7 +13503,7 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Who directed the movie Arrival?",
           "description": "Query parameter",
           "source": "maintainer"
         },
@@ -13518,7 +13518,7 @@
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/llama/ask?q=Replit",
+        "url": "https://api.lodearink.name.ng/llama/ask?q=Who+directed+the+movie+Arrival%3F",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -13527,7 +13527,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/llama/ask?q=Replit",
+          "url": "https://api.lodearink.name.ng/llama/ask?q=Who+directed+the+movie+Arrival%3F",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -13631,7 +13631,7 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "What makes the movie Arrival memorable?",
           "description": "Query parameter",
           "source": "maintainer"
         },
@@ -13646,7 +13646,7 @@
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/llama/chat?q=Replit",
+        "url": "https://api.lodearink.name.ng/llama/chat?q=What+makes+the+movie+Arrival+memorable%3F",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -13655,7 +13655,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/llama/chat?q=Replit",
+          "url": "https://api.lodearink.name.ng/llama/chat?q=What+makes+the+movie+Arrival+memorable%3F",
           "body": null,
           "headers": {},
           "payloadType": "raw",
@@ -13759,7 +13759,7 @@
           "name": "q",
           "in": "query",
           "required": null,
-          "example": "Replit",
+          "example": "Name three memorable science fiction films.",
           "description": "Query parameter",
           "source": "maintainer"
         },
@@ -13774,7 +13774,7 @@
       ],
       "sample": {
         "method": "GET",
-        "url": "https://api.lodearink.name.ng/llama/v1/chat/completions?q=Replit",
+        "url": "https://api.lodearink.name.ng/llama/v1/chat/completions?q=Name+three+memorable+science+fiction+films.",
         "body": null,
         "headers": {},
         "payloadType": "raw",
@@ -13783,7 +13783,7 @@
       "methodSamples": {
         "GET": {
           "method": "GET",
-          "url": "https://api.lodearink.name.ng/llama/v1/chat/completions?q=Replit",
+          "url": "https://api.lodearink.name.ng/llama/v1/chat/completions?q=Name+three+memorable+science+fiction+films.",
           "body": null,
           "headers": {},
           "payloadType": "raw",

@@ -61,48 +61,94 @@ export function createOgSvg({
   checkedAt,
   count,
 } = {}) {
-  const displayTitle = textLines(title, { x: 88, y: 255, size: 56, lineHeight: 66, maxChars: 31, maxLines: 2, fill: "#f1f6fa", family: "DejaVu Sans", weight: 700 });
-  const displayPath = textLines(path, { x: 90, y: 427, size: 22, lineHeight: 29, maxChars: 52, maxLines: 2, fill: "#86d8e8", family: "DejaVu Sans Mono" });
-  const displayDescription = textLines(description, { x: 90, y: 492, size: 18, lineHeight: 25, maxChars: 68, maxLines: 2, fill: "#9baebe", family: "DejaVu Sans" });
+  const displayTitle = textLines(title, { x: 82, y: 245, size: 62, lineHeight: 70, maxChars: 20, maxLines: 2, fill: "#f3f3ef", family: "DejaVu Sans", weight: 700 });
+  const showPath = Boolean(path && path !== "/");
+  const displayPath = showPath
+    ? textLines(path, { x: 84, y: 418, size: 19, lineHeight: 26, maxChars: 48, maxLines: 2, fill: "#c5cecc", family: "DejaVu Sans Mono" })
+    : "";
+  const pathAccent = showPath ? '<rect x="82" y="389" width="4" height="43" rx="2" fill="#c6d3ca"/>' : "";
+  const displayDescription = textLines(description, { x: 84, y: 489, size: 17, lineHeight: 24, maxChars: 66, maxLines: 2, fill: "#9da9a8", family: "DejaVu Sans" });
   const categoryLabel = escapeXml(String(category || "Lodearink API").toUpperCase());
   const methodList = (Array.isArray(methods) ? methods : String(methods || "").split(/[,\s]+/))
-    .map(method => String(method).trim().toUpperCase()).filter(Boolean).slice(0, 5);
+    .map(method => String(method).trim().toUpperCase()).filter(Boolean).slice(0, 4);
   const methodsMarkup = methodList.map((method, index) => {
-    const x = 858 + index * 56;
-    return `<g transform="translate(${x} 0)"><rect x="0" y="111" width="48" height="27" rx="7" fill="#132631" stroke="#2b6571"/><text x="24" y="129" text-anchor="middle" fill="#9de3ed" font-family="DejaVu Sans Mono" font-size="11" font-weight="700">${escapeXml(method.slice(0, 8))}</text></g>`;
+    const x = 842 + index * 64;
+    return `<g transform="translate(${x} 0)">
+      <rect x="0" y="103" width="56" height="28" rx="8" fill="#171a1b" stroke="#353a3b"/>
+      <text x="28" y="122" text-anchor="middle" fill="#d4dfdf" font-family="DejaVu Sans Mono" font-size="11" font-weight="700">${escapeXml(method.slice(0, 8))}</text>
+    </g>`;
   }).join("");
-  const statusText = status ? String(status) : "";
+  const statusText = String(status || "");
   const badgeLabel = statusText.length > 18 ? `${statusText.slice(0, 17)}…` : statusText;
-  const badge = status ? `<g><rect x="90" y="548" width="${Math.min(230, Math.max(92, statusText.length * 9 + 30))}" height="30" rx="15" fill="#10201f" stroke="${statusColor(status)}" stroke-opacity=".58"/><circle cx="106" cy="563" r="4" fill="${statusColor(status)}"/><text x="119" y="567" fill="${statusColor(status)}" font-family="DejaVu Sans Mono" font-size="12" font-weight="700">${escapeXml(badgeLabel)}</text></g>` : "";
-  const checked = status && checkedAt ? `<text x="90" y="592" fill="#748a9b" font-family="DejaVu Sans Mono" font-size="11">CHECKED · ${escapeXml(checkedAt)}</text>` : "";
+  const badgeWidth = Math.min(230, Math.max(100, badgeLabel.length * 8 + 42));
+  const badge = statusText ? `<g>
+      <rect x="84" y="548" width="${badgeWidth}" height="32" rx="16" fill="#151a19" stroke="${statusColor(statusText)}" stroke-opacity=".54"/>
+      <circle cx="101" cy="564" r="4" fill="${statusColor(statusText)}"/>
+      <text x="114" y="568" fill="${statusColor(statusText)}" font-family="DejaVu Sans Mono" font-size="12" font-weight="700">${escapeXml(badgeLabel)}</text>
+    </g>` : "";
+  const checked = statusText && checkedAt
+    ? `<text x="${84 + badgeWidth + 16}" y="568" fill="#788583" font-family="DejaVu Sans Mono" font-size="11">CHECKED · ${escapeXml(checkedAt)}</text>`
+    : "";
   const countMarkup = count !== undefined && count !== null && count !== ""
-    ? `<text x="1110" y="572" text-anchor="end" fill="#7d93a3" font-family="DejaVu Sans Mono" font-size="11">${escapeXml(count)}</text>`
+    ? `<text x="1116" y="570" text-anchor="end" fill="#788583" font-family="DejaVu Sans Mono" font-size="11">${escapeXml(count)} ENDPOINTS</text>`
     : "";
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="${escapeXml(title)}">
 <defs>
-  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#08131c"/><stop offset=".55" stop-color="#09111a"/><stop offset="1" stop-color="#0b1721"/></linearGradient>
-  <radialGradient id="wash"><stop stop-color="#187991" stop-opacity=".28"/><stop offset="1" stop-color="#187991" stop-opacity="0"/></radialGradient>
-  <pattern id="grid" width="38" height="38" patternUnits="userSpaceOnUse"><path d="M38 0H0V38" fill="none" stroke="#9bd5e0" stroke-opacity=".045"/></pattern>
+  <linearGradient id="canvas" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#090b0c"/><stop offset=".58" stop-color="#0d1011"/><stop offset="1" stop-color="#111515"/>
+  </linearGradient>
+  <radialGradient id="ambient" cx="75%" cy="43%" r="60%">
+    <stop stop-color="#728d85" stop-opacity=".14"/><stop offset="1" stop-color="#728d85" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#313a38"/><stop offset=".48" stop-color="#1d2423"/><stop offset="1" stop-color="#111615"/>
+  </linearGradient>
+  <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#d8e5dc" stop-opacity=".42"/><stop offset=".52" stop-color="#8d9c94" stop-opacity=".08"/><stop offset="1" stop-color="#d8e5dc" stop-opacity=".22"/>
+  </linearGradient>
+  <linearGradient id="orb" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#e0e9dd"/><stop offset=".34" stop-color="#87968a"/><stop offset=".72" stop-color="#3b4540"/><stop offset="1" stop-color="#171c1a"/>
+  </linearGradient>
+  <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="16"/>
+    <feOffset dy="16"/>
+    <feComponentTransfer><feFuncA type="linear" slope=".48"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
 </defs>
-<rect width="1200" height="630" fill="url(#bg)"/><rect width="1200" height="630" fill="url(#grid)"/><ellipse cx="1025" cy="220" rx="360" ry="310" fill="url(#wash)"/>
-<g fill="none" stroke="#69c5d6" stroke-opacity=".18">
- <circle cx="1000" cy="314" r="114"/><circle cx="1000" cy="314" r="166"/><circle cx="1000" cy="314" r="218"/>
- <ellipse cx="1000" cy="314" rx="218" ry="82" transform="rotate(-28 1000 314)"/><ellipse cx="1000" cy="314" rx="218" ry="82" transform="rotate(28 1000 314)"/>
+<rect width="1200" height="630" fill="url(#canvas)"/>
+<rect width="1200" height="630" fill="url(#ambient)"/>
+<path d="M0 1H1200" stroke="#d6e3dc" stroke-opacity=".28"/>
+
+<g transform="translate(82 62)">
+  <rect width="38" height="38" rx="11" fill="#1b211f" stroke="#63736a" stroke-opacity=".7"/>
+  <path d="M11 25.5 18.5 12h4L30 25.5h-4.4l-5.2-9.8-5.1 9.8z" fill="#dce8de"/>
+  <text x="52" y="26" fill="#ecefea" font-family="DejaVu Sans" font-size="19" font-weight="700" letter-spacing=".2">LODEARINK</text>
+  <text x="174" y="26" fill="#87918b" font-family="DejaVu Sans Mono" font-size="11" letter-spacing="1.8">API WORKSPACE</text>
 </g>
-<g fill="#83dbe8"><circle cx="1000" cy="314" r="7"/><circle cx="812" cy="231" r="4"/><circle cx="1122" cy="213" r="4"/><circle cx="1057" cy="505" r="4"/></g>
-<path d="M0 1H1200" stroke="#6cd4e2" stroke-opacity=".5"/>
-<g transform="translate(88 75)">
- <rect width="38" height="38" rx="11" fill="#102431" stroke="#4bb4c6" stroke-opacity=".7"/>
- <circle cx="19" cy="19" r="9" fill="none" stroke="#9de9f0" stroke-width="1.4"/><path d="M10 19h18M19 10c5 5 5 13 0 18M19 10c-5 5-5 13 0 18" fill="none" stroke="#9de9f0" stroke-width="1"/>
- <text x="52" y="26" fill="#eaf4f7" font-family="DejaVu Sans" font-size="19" font-weight="700">LODEARINK <tspan fill="#83d9e6">API</tspan></text>
-</g>
-<text x="90" y="174" fill="#80d3e0" font-family="DejaVu Sans Mono" font-size="12" letter-spacing="2">${categoryLabel}</text>
+<text x="84" y="151" fill="#abb8af" font-family="DejaVu Sans Mono" font-size="12" font-weight="700" letter-spacing="1.5">${categoryLabel}</text>
 ${methodsMarkup}
+
+<g opacity=".95">
+  <ellipse cx="1002" cy="414" rx="186" ry="26" fill="#000" opacity=".5" filter="url(#shadow)"/>
+  <g filter="url(#shadow)" transform="translate(835 211) rotate(-8 150 130)">
+    <path d="M22 37 173 6l122 56-151 37z" fill="#3b4641" stroke="url(#edge)"/>
+    <path d="m144 99 151-37v165l-151 39z" fill="#141a18" stroke="#5e6b63" stroke-opacity=".46"/>
+    <path d="m22 37 122 62v167L22 198z" fill="url(#glass)" stroke="#718077" stroke-opacity=".34"/>
+    <path d="m35 57 96 49v3l-96-49z" fill="#d2ddd4" opacity=".14"/>
+    <circle cx="91" cy="144" r="41" fill="url(#orb)" stroke="#dfe8df" stroke-opacity=".46"/>
+    <circle cx="78" cy="130" r="10" fill="#f0f5ec" opacity=".54"/>
+    <path d="M61 154c15 13 39 18 57 7" fill="none" stroke="#f1f5ee" stroke-opacity=".35" stroke-width="2"/>
+    <path d="m169 109 96-23v7l-96 24zM169 130l74-18v5l-74 18zM169 151l84-21v5l-84 21zM169 183l53-13v5l-53 13z" fill="#aebbb1" opacity=".48"/>
+    <rect x="169" y="204" width="51" height="19" rx="6" fill="#26312b" stroke="#86968a" stroke-opacity=".45"/>
+    <text x="194.5" y="217" text-anchor="middle" fill="#d8e5d9" font-family="DejaVu Sans Mono" font-size="9" font-weight="700">API</text>
+  </g>
+</g>
+
 ${displayTitle}
-${displayPath}
+${pathAccent}${displayPath}
 ${displayDescription}
 ${badge}${checked}${countMarkup}
-<path d="M88 608H1112" stroke="#8bb6c3" stroke-opacity=".14"/>
-<text x="1110" y="620" text-anchor="end" fill="#607887" font-family="DejaVu Sans Mono" font-size="10">LODEARINK · API WORKSPACE</text>
+<path d="M82 605H1118" stroke="#a6b3aa" stroke-opacity=".15"/>
 </svg>`;
 }

@@ -46,6 +46,10 @@ test('the sharing renderer escapes markup and uses only supplied availability',(
   assert.ok(svg.includes('&lt;script&gt;'));assert.ok(!svg.includes('<script>'));
   assert.ok(svg.includes('offline'));assert.ok(svg.includes('2026-11-27'));
   assert.ok(svg.includes('width="1200"'));assert.ok(svg.includes('height="630"'));
+  assert.doesNotMatch(svg,/<pattern|grid/i);
+  assert.match(svg,/font-size="62"/);
+  assert.match(svg,/filter id="shadow"/);
+  assert.doesNotMatch(createOgSvg({path:'/'}),/<text[^>]*>\/<\/text>/);
 });
 test('built endpoint HTML exposes individual social metadata without JavaScript',()=>{
   const manifest=JSON.parse(readFileSync(new URL('../dist/share-manifest.json',import.meta.url),'utf8'));

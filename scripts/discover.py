@@ -14,7 +14,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 VIDEO = "https://www.youtube.com/watch?v=jNQXAC9IVRw"
 IMAGE = "https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg"
 EXAMPLES = {
-    "q": "Replit", "query": "Replit", "name": "express", "package": "express",
+    "q": "The Matrix", "query": "Ada Lovelace", "name": "express", "package": "express",
     "url": VIDEO, "text": "Hello from Lodearink", "prompt": "Say hello in one sentence.",
     "id": "8863", "username": "octocat", "user": "octocat", "repo": "octocat/Hello-World",
     "owner": "octocat", "subreddit": "programming", "title": "Inception",
@@ -25,6 +25,36 @@ EXAMPLES = {
     "task_id": "example-task-id", "taskId": "example-task-id", "job_id": "example-task-id",
     "token": "example-mail-token", "email": "example@example.com",
 }
+
+def search_example(path):
+    path = path.lower()
+    if path.startswith("/playstore"): return "YouTube Music"
+    if path.startswith("/tts/voices"): return "Aria"
+    if path.startswith("/github/repos"): return "vercel/next.js"
+    if path.startswith("/github/users"): return "torvalds"
+    if path.startswith("/npm/"): return "video.js"
+    if path.startswith("/bing/images/zip"): return "Studio Ghibli landscapes"
+    if path.startswith("/bing/images/random"): return "Pedro Pascal portrait"
+    if path.startswith("/bing/images"): return "Dune Part Two poster"
+    if path.startswith("/bing/web"): return "Christopher Nolan filmography"
+    if path.startswith("/pinterest"): return "Blade Runner 2049 poster"
+    if path.startswith("/reddit"): return "Dune Part Two discussion"
+    if path.startswith("/ytsearch/channel"): return "MrBeast"
+    if path.startswith("/ytsearch"): return "Interstellar trailer"
+    if path.startswith("/ytdl"): return "Arrival film trailer"
+    if path.startswith("/football"): return "Arsenal"
+    if path.startswith("/llama"): return "What makes the movie Arrival memorable?"
+    if path.startswith("/anime"): return "One Piece"
+    if path.startswith("/movie"): return "Inception"
+    if any(service in path for service in ("spotsearch", "lyric", "music")): return "Coldplay"
+    if path.startswith("/uptodown"): return "Telegram"
+    return "Ada Lovelace" if path in ("/search", "/hn/search") else "The Matrix"
+
+
+def example_value(name, path):
+    if name in ("q", "query"):
+        return search_example(path)
+    return EXAMPLES[name]
 
 
 def request(path, method="GET", params=None, body=None):
@@ -123,7 +153,7 @@ def discover(path, category, listed):
         if not hints:
             break
         for name in hints:
-            value = EXAMPLES[name]
+            value = example_value(name, path)
             if name in ("name", "package") and "/pypi/" in path:
                 value = "requests"
             if name == "url":

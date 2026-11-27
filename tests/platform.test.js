@@ -32,6 +32,30 @@ test('every inventory entry has traceable live evidence and honest offline class
     if(e.safeCheck)assert.ok(!/aivideo|\/generate|\/submit|\/upload|\/tmail\/new$|\/batch|\/download|\/stream/.test(e.path),`Unsafe scheduler entry: ${e.path}`);
   }
 });
+test('sample requests use varied examples and keep historical evidence separate',()=>{
+  const values=[];
+  for(const endpoint of data.endpoints){
+    for(const sample of [endpoint.sample,...Object.values(endpoint.methodSamples||{})]){
+      if(!sample?.url)continue;
+      const query=new URL(sample.url).searchParams;
+      for(const name of ['q','query']){
+        const value=query.get(name);
+        if(value){assert.notEqual(value.toLowerCase(),'replit',`${endpoint.path}: sample URL`);values.push(value);}
+      }
+    }
+    for(const parameter of endpoint.parameters||[]){
+      if(['q','query'].includes(parameter.name)&&parameter.example){
+        assert.notEqual(String(parameter.example).toLowerCase(),'replit',`${endpoint.path}: parameter example`);
+        values.push(String(parameter.example));
+      }
+    }
+  }
+  assert.ok(new Set(values).size>=20,'query examples should be varied across services');
+  for(const script of ['../scripts/update_catalog.py','../scripts/discover.py']){
+    assert.doesNotMatch(readFileSync(new URL(script,import.meta.url),'utf8'),/["'](?:q|query)["']\s*:\s*["']Replit["']/);
+  }
+  assert.ok(data.endpoints.some(endpoint=>endpoint.evidence.some(evidence=>evidence.url.includes('q=Replit'))),'historical evidence should remain unchanged');
+});
 test('code generators preserve URLs and never attach a GET body',()=>{
   for(const language of LANGUAGES){
     const text=generateCode({...base,body:'SHOULD_NOT_APPEAR'},language);

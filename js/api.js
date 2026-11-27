@@ -1,5 +1,6 @@
 import {BASE_URL} from './catalog.js';
 import {updateStore, readStore} from './storage.js';
+import {sniffMediaType} from './media-type.js';
 export function classifyResult(status, data, path='') {
   if (status === 0 || status === 403) return 'unknown';
   if ([400, 405, 422].includes(status)) return 'requires-parameters';
@@ -70,11 +71,24 @@ export async function executeRequest(request, {signal, files = {}, onProgress} =
       }
     } finally { reader.releaseLock(); }
   }
-  const blob = new Blob(chunks, {type: response.headers.get('content-type') || 'application/octet-stream'});
-  const text = /json|text|xml|javascript/i.test(blob.type) ? await blob.text() : '';
+  const declaredContentType = response.headers.get('content-type') || 'application/octet-stream';
+  const genericBinaryType = /^(?:application\/octet-stream|binary\/octet-stream|application\/x-download)(?:\s*;|$)/i.test(declaredContentType.trim());
+  const sourceBlob = new Blob(chunks, {type: declaredContentType});
+  const signature = new Uint8Array(await sourceBlob.slice(0, 32).arrayBuffer());
+  const detectedMediaType = genericBinaryType ? sniffMediaType(signature) : '';
+  let blob = detectedMediaType ? sourceBlob.slice(0, sourceBlob.size, detectedMediaType) : sourceBlob;
+  let text = /json|text|xml|javascript/i.test(blob.type) ? await blob.text() : '';
   let data = null;
   try { data = JSON.parse(text); } catch { /* A non-JSON response is valid. */ }
-  return {status: response.status, statusText: response.statusText, headers: [...response.headers.entries()], blob, text, data, size, elapsed: Math.round(performance.now() - start), contentType: blob.type, url: response.url};
+  if (genericBinaryType && !detectedMediaType && size) {
+    const candidate = await sourceBlob.text();
+    try {
+      data = JSON.parse(candidate);
+      text = candidate;
+      blob = sourceBlob.slice(0, sourceBlob.size, 'application/json');
+    } catch { /* Unknown binary remains a downloadable response. */ }
+  }
+  return {status: response.status, statusText: response.statusText, headers: [...response.headers.entries()], blob, text, data, size, elapsed: Math.round(performance.now() - start), contentType: blob.type, declaredContentType, detectedMediaType, url: response.url};
 }
 const inFlight = new Map();
 export async function checkEndpoint(endpoint, {force = false} = {}) {

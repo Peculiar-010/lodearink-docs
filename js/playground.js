@@ -1,6 +1,7 @@
 import {endpoints, findEndpoint, findEndpointFromLocation, endpointLink, exampleRequest, BASE_URL} from './catalog.js';
 import {escapeHtml as esc, icon, toast, renderBadge, formatTime} from './ui.js';
 import {executeRequest, copyText, downloadBlob, storeStatus, classifyResult} from './api.js';
+import {isPreviewableMediaType} from './media-type.js';
 import {generateCode, LANGUAGES} from './code-generator.js';
 import {readStore, updateStore, saveRequest, addRecent, importRequests, exportRequests, validateRequest} from './storage.js';
 import {highlight} from './highlight.js';
@@ -106,15 +107,18 @@ function renderSaved() {
 function renderResponse(tab = 'formatted') {
   if (!result) return;
   const view = $('#response-viewer'); view.className = '';
-  $('#response-meta').innerHTML = `<div class="response-metrics"><span class="method">HTTP ${result.status}</span>${renderBadge(classifyResult(result.status, result.data,new URL(result.requestUrl||result.url).pathname))}<span>${result.elapsed} ms</span><span>${(result.size/1024).toFixed(1)} KB</span></div><p class="muted small">${esc(result.contentType)}</p>`;
-  const isMedia = /^(image|audio|video)\//.test(result.contentType);
+  const typeLabel = result.detectedMediaType
+    ? `${esc(result.declaredContentType)} · detected ${esc(result.detectedMediaType)}`
+    : esc(result.contentType);
+  $('#response-meta').innerHTML = `<div class="response-metrics"><span class="method">HTTP ${result.status}</span>${renderBadge(classifyResult(result.status, result.data,new URL(result.requestUrl||result.url).pathname))}<span>${result.elapsed} ms</span><span>${(result.size/1024).toFixed(1)} KB</span></div><p class="muted small">${typeLabel}</p>`;
+  const isMedia = isPreviewableMediaType(result.contentType);
   const tabs = ['formatted','raw','headers', ...(isMedia ? ['preview'] : [])];
   view.innerHTML = `<div class="tabs" role="tablist" aria-label="Response views">${tabs.map(t => `<button class="tab ${t===tab ? 'active' : ''}" data-response-tab="${t}" role="tab" aria-selected="${t===tab}">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div><div id="response-content"></div><div id="task-followup"></div><div class="request-tools"><button class="button button-small button-ghost" id="copy-response">Copy response</button><button class="button button-small button-ghost" id="download-response">${icon('download')} Download</button></div>`;
   const content = $('#response-content');
   if (tab === 'headers') content.innerHTML = `<p class="muted small">Only headers exposed by the API’s CORS policy are visible to JavaScript.</p><pre class="code-block">${esc(result.headers.map(([k,v])=>`${k}: ${v}`).join('\n'))}</pre>`;
   else if (tab === 'preview' && isMedia) {
     if (!mediaUrl) mediaUrl = URL.createObjectURL(result.blob);
-    content.innerHTML = result.contentType.startsWith('image/') ? `<img class="response-media" alt="Live API response" src="${mediaUrl}">` : `<${result.contentType.startsWith('audio/') ? 'audio' : 'video'} class="response-media" controls src="${mediaUrl}"></${result.contentType.startsWith('audio/') ? 'audio' : 'video'}>`;
+    content.innerHTML = result.contentType.startsWith('image/') ? `<img class="response-media" alt="API image response" src="${mediaUrl}">` : `<${result.contentType.startsWith('audio/') ? 'audio' : 'video'} class="response-media" controls preload="metadata" src="${mediaUrl}"></${result.contentType.startsWith('audio/') ? 'audio' : 'video'}>`;
   } else if (!result.text && result.size) content.innerHTML = `<div class="empty">${isMedia ? 'Media response received. Choose Preview to view it.' : 'Binary response received. Download it to inspect the file.'}</div>`;
   else content.innerHTML = `<pre class="code-block" tabindex="0">${highlight(tab === 'formatted' && result.data !== null ? JSON.stringify(result.data,null,2) : result.text || '(Empty response)', tab==='formatted' && result.data !== null)}</pre>`;
   nextTask=taskFollowup(result.data,result.requestUrl||result.url,endpoints);
@@ -147,7 +151,7 @@ async function send() {
     }});
     result.requestUrl=sentRequest.url;
     storeStatus(sentEndpoint.path, classifyResult(result.status,result.data,sentEndpoint.path), `HTTP ${result.status}`, result.status);
-    renderResponse(/^(image|audio|video)\//.test(result.contentType) ? 'preview' : 'formatted');
+    renderResponse(isPreviewableMediaType(result.contentType) ? 'preview' : 'formatted');
   } catch (error) {
     const message = controller?.signal.aborted ? String(controller.signal.reason || 'Request cancelled.') : error.message;
     $('#request-error').textContent = message;

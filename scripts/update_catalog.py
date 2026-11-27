@@ -165,8 +165,10 @@ def classify(result):
 
 
 def sample_value(name, path, default=""):
+    if name in ("q", "query") and (not default or str(default).strip().lower() == "replit"):
+        return search_example(path)
     values = {
-        "query": "Ada Lovelace", "q": "Coldplay" if any(s in path for s in ["spotsearch", "lyric", "music"]) else "Naruto" if "/anime/" in path else "Inception" if "/movie/" in path else "telegram" if "uptodown" in path else "Replit",
+        "query": "Ada Lovelace", "q": "The Matrix",
         "url": VIDEO, "image": IMAGE, "image_url": IMAGE, "prompt": "A blue sphere on a dark background",
         "text": "Hello world", "voice": "voice-1", "name": "express", "owner": "octocat", "username": "instagram",
         "id": "8863", "limit": "2", "count": "2", "page": "1", "offset": "0",
@@ -201,6 +203,85 @@ def sample_value(name, path, default=""):
         elif path == "/upload/file": value = "https://www.w3.org/TR/PNG/iso_8859-1.txt"
         elif path.startswith("/mediafire"): value = ""
     return value
+
+
+def search_example(path):
+    """Return a varied, service-specific value for search-style request samples."""
+    path = path.lower()
+    examples = {
+        "/playstore/search": "YouTube Music",
+        "/tts/voices": "Aria",
+        "/tts/voices/search": "Samantha",
+        "/github/repos": "vercel/next.js",
+        "/github/users": "torvalds",
+        "/npm/search": "video.js",
+        "/bing/images": "Dune Part Two poster",
+        "/bing/images/random": "Zendaya film still",
+        "/bing/images/random.json": "Pedro Pascal portrait",
+        "/bing/images/zip": "Studio Ghibli landscapes",
+        "/bing/web": "Christopher Nolan filmography",
+        "/bing/web/links": "Interstellar official trailer",
+        "/bing/web/snippets": "Arrival movie review",
+        "/bing/web/summary": "The Matrix plot summary",
+        "/bing/web/titles": "Spider-Man Across the Spider-Verse",
+        "/bing/web/top": "Best science fiction films",
+        "/pinterest/search": "Blade Runner 2049 poster",
+        "/reddit/search": "Dune Part Two discussion",
+        "/ytsearch": "Interstellar trailer",
+        "/ytsearch/channel": "MrBeast",
+        "/ytsearch/links": "The Dark Knight trailer",
+        "/ytsearch/thumb": "Spider-Man No Way Home trailer",
+        "/ytsearch/titles": "The Lord of the Rings",
+        "/ytsearch/video": "Oppenheimer official trailer",
+        "/ytdl/search": "Arrival film trailer",
+        "/football/search": "Arsenal",
+        "/llama/ask": "Who directed the movie Arrival?",
+        "/llama/chat": "What makes the movie Arrival memorable?",
+        "/llama/v1/chat/completions": "Name three memorable science fiction films.",
+    }
+    if path in examples:
+        return examples[path]
+    if path.startswith("/spotsearch") or path.startswith("/lyricsdb") or path.startswith("/lyricfind") or path.startswith("/music"):
+        return "Coldplay"
+    if path.startswith("/anime/"):
+        return "One Piece"
+    if path.startswith("/movie/"):
+        return "Inception"
+    if path.startswith("/uptodown/"):
+        return "Telegram"
+    return "Ada Lovelace" if path in ("/search", "/hn/search") else "The Matrix"
+
+
+def refresh_catalog_examples(root):
+    """Refresh only user-facing generated samples, leaving live evidence untouched."""
+    catalog_path = root / "data/catalog.json"
+    catalog = json.loads(catalog_path.read_text())
+    changed = 0
+    for endpoint in catalog["endpoints"]:
+        path = endpoint["path"]
+        requests = [endpoint.get("sample", {}), *endpoint.get("methodSamples", {}).values()]
+        for sample in requests:
+            url = sample.get("url")
+            if not url:
+                continue
+            parts = urllib.parse.urlsplit(url)
+            query = urllib.parse.parse_qsl(parts.query, keep_blank_values=True)
+            updated = []
+            sample_changed = False
+            for name, value in query:
+                if name in ("q", "query") and value.strip().lower() == "replit":
+                    value = search_example(path)
+                    sample_changed = True
+                updated.append((name, value))
+            if sample_changed:
+                sample["url"] = urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, urllib.parse.urlencode(updated), parts.fragment))
+                changed += 1
+        for parameter in endpoint.get("parameters", []):
+            if parameter.get("name") in ("q", "query") and str(parameter.get("example", "")).strip().lower() == "replit":
+                parameter["example"] = search_example(path)
+                changed += 1
+    catalog_path.write_text(json.dumps(catalog, indent=2))
+    print(f"Refreshed {changed} sample URLs and parameter examples offline; saved API evidence was preserved.")
 
 
 def prepare_body(value, path, key=""):
@@ -358,7 +439,12 @@ def main():
     parser.add_argument("--spec")
     parser.add_argument("--resume", action="store_true", help="Resume an interrupted verification run from its local checkpoint.")
     parser.add_argument("--regroup-only", action="store_true", help="Refresh service groups without making any API requests.")
+    parser.add_argument("--refresh-examples", action="store_true", help="Refresh generic Replit query samples offline without changing saved API evidence.")
     args = parser.parse_args()
+    if args.refresh_examples:
+        if args.spec or args.resume or args.regroup_only: parser.error("--refresh-examples cannot be combined with other options")
+        refresh_catalog_examples(ROOT)
+        return
     if args.regroup_only:
         if args.spec or args.resume: parser.error("--regroup-only cannot be combined with --spec or --resume")
         regroup_inventory(ROOT)
