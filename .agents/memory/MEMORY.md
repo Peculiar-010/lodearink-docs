@@ -1,1 +1,2 @@
 - [Vercel fork synchronization](vercel-fork.md) — the hosting build source can differ from the workspace Git remote; verify both before claiming a pushed fix reached Vercel.
+- [Service grouping rules](service-grouping.md) — social downloaders must contain social-media services, not app stores or unrelated download tools.
