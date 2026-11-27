@@ -69,8 +69,9 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
   for(const page of manifest.pages){
     const filename=page.path==='/'?'index':page.path.slice(1);
     const html=readFileSync(new URL('../dist/'+filename+'.html',import.meta.url),'utf8');
-    const {meta,canonical}=sharingTags(html);
+    const {meta,canonical,favicon}=sharingTags(html);
     assert.equal(canonical,origin+page.path);
+    assert.equal(favicon,origin+'/favicon.svg');
     assert.equal(meta.get('og:url'),canonical);
     assert.equal(meta.get('og:image'),origin+page.image);
     assert.equal(meta.get('og:image:secure_url'),origin+page.image);
@@ -94,6 +95,8 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
     if(!decoded.has(page.image)){inspectPng(buffer);decoded.add(page.image);}
     if(page.endpoint){assert.ok(html.includes(page.endpoint));assert.ok(html.includes('Status: '+page.status.state.replaceAll('-',' ')));}
   }
+  assert.ok(existsSync(new URL('../dist/favicon.svg',import.meta.url)));
+  assert.match(readFileSync(new URL('../dist/favicon.svg',import.meta.url),'utf8'),/<svg\b/);
   assert.equal(decoded.size,inventory.length+8);
   for(const filename of ['../js/status.js','../js/usage.js']){
     const source=readFileSync(new URL(filename,import.meta.url),'utf8');

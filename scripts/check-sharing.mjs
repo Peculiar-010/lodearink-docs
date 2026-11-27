@@ -33,13 +33,14 @@ export function inspectPng(bytes){
 }
 
 export function sharingTags(html){
-  const meta=new Map();let canonical;
+  const meta=new Map();let canonical,favicon;
   for(const match of html.matchAll(/<(meta|link)\b[^>]*>/gi)){
     const attrs=Object.fromEntries([...match[0].matchAll(/([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g)].map(m=>[m[1].toLowerCase(),m[2]??m[3]]));
     if(match[1].toLowerCase()==='meta')meta.set(attrs.property||attrs.name,attrs.content);
     if(match[1].toLowerCase()==='link'&&attrs.rel==='canonical')canonical=attrs.href;
+    if(match[1].toLowerCase()==='link'&&attrs.rel==='icon'&&attrs.type==='image/svg+xml')favicon=attrs.href;
   }
-  return {meta,canonical};
+  return {meta,canonical,favicon};
 }
 
 export async function checkSharing({expectedOrigin,fetchOrigin=expectedOrigin,fetcher=fetch}){
@@ -49,8 +50,9 @@ export async function checkSharing({expectedOrigin,fetchOrigin=expectedOrigin,fe
   for(const path of paths){
     const response=await fetcher(new URL(path,fetchOrigin),{headers,signal:AbortSignal.timeout(20000)});
     assert.equal(response.status,200,`${path}: HTTP ${response.status}`);
-    const {meta,canonical}=sharingTags(await response.text());
+    const {meta,canonical,favicon}=sharingTags(await response.text());
     assert.equal(canonical,expectedOrigin+path,`${path}: incorrect canonical URL`);
+    assert.equal(favicon,expectedOrigin+'/favicon.svg',`${path}: incorrect favicon URL`);
     assert.equal(meta.get('og:url'),canonical,`${path}: incorrect Open Graph URL`);
     assert.ok(meta.get('og:title'));assert.ok(meta.get('og:description'));
     const image=new URL(meta.get('og:image'));
@@ -68,6 +70,11 @@ export async function checkSharing({expectedOrigin,fetchOrigin=expectedOrigin,fe
     }
     console.log(`PASS ${path}: metadata and sharing PNG`);
   }
+  const icon=await fetcher(new URL('/favicon.svg',fetchOrigin),{headers,signal:AbortSignal.timeout(20000)});
+  assert.equal(icon.status,200,`/favicon.svg: HTTP ${icon.status}`);
+  assert.match(icon.headers.get('content-type')||'',/^image\/svg\+xml\b/i);
+  assert.match(await icon.text(),/<svg\b/i,'Favicon response is not SVG');
+  console.log('PASS /favicon.svg: linked and served');
   return {pages:paths.length,images:seen.size};
 }
 

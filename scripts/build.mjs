@@ -49,6 +49,7 @@ async function image(key,model){
 function metadata(html,{title,description,path,image,alt}){
   const url=origin+path;
   const tags=`<meta name="description" content="${escape(description)}">
+<link rel="icon" type="image/svg+xml" href="${escape(origin+'/favicon.svg')}">
 <link rel="canonical" href="${escape(url)}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Lodearink API">
