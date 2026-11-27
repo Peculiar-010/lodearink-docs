@@ -66,7 +66,7 @@ export function formatTime(iso) {
 
 const navItems = [
   ["Overview","/"], ["API reference","/docs"], ["Playground","/playground"],
-  ["Guides","/guides"], ["Status","/status"]
+  ["Guides","/guides"], ["Usage","/usage"], ["Status","/status"]
 ];
 function currentPage() {
   const path = location.pathname.replace(/\/+$/, "") || "/";
@@ -74,6 +74,7 @@ function currentPage() {
   if (path === "/docs" || path === "/docs.html" || path.startsWith("/docs/")) return "/docs";
   if (path === "/playground" || path === "/playground.html" || path.startsWith("/playground/")) return "/playground";
   if (path === "/status" || path === "/status.html") return "/status";
+  if (path === "/usage" || path === "/usage.html") return "/usage";
   if (path === "/guides" || path === "/guides.html") return "/guides";
   if (path === "/changelog" || path === "/changelog.html") return "/changelog";
   return path;
@@ -84,7 +85,7 @@ function hydrateShell() {
   const page = currentPage();
   const active = href => (href === page ? 'aria-current="page"' : "");
   if (header) header.innerHTML = `<header class="header"><div class="container nav"><a class="brand" href="/" aria-label="Lodearink API home"><span class="brand-mark">${icon("globe")}</span><span>Lodearink <span style="color:#91baff">API</span></span></a><nav class="nav-links" aria-label="Main navigation">${navItems.map(([label, href]) => `<a href="${href}" ${active(href)}>${label}</a>`).join("")}<a href="/changelog" ${active("/changelog")}>Changelog</a></nav><div class="nav-actions"><button class="button button-ghost search-trigger" type="button" data-open-search>${icon("search")}<span>Search routes</span><kbd>⌘ K</kbd></button><a class="button button-primary button-small" href="/playground">Try a request <span aria-hidden="true">↗</span></a><button class="icon-button mobile-trigger" type="button" data-mobile-toggle aria-label="Open navigation" aria-expanded="false">${icon("menu")}</button></div></div><nav class="mobile-menu" data-mobile-menu aria-label="Mobile navigation">${navItems.map(([label, href]) => `<a href="${href}" ${active(href)}>${label}</a>`).join("")}<a href="/changelog" ${active("/changelog")}>Changelog</a></nav></header>`;
-  if (footer) footer.innerHTML = `<footer class="footer"><div class="container footer-inner"><div><a class="brand" href="/"><span class="brand-mark">${icon("globe")}</span><span>Lodearink <span style="color:#91baff">API</span></span></a><div style="margin-top:9px">A public workspace for API requests.</div></div><div class="footer-links"><a href="/docs">Reference</a><a href="/playground">Playground</a><a href="/status">Status</a><a href="/changelog">Changelog</a></div><span>API base <code style="font:11px var(--mono);color:#acbdd1">api.lodearink.name.ng</code></span></div></footer>`;
+   if (footer) footer.innerHTML = `<footer class="footer"><div class="container footer-inner"><div><a class="brand" href="/"><span class="brand-mark">${icon("globe")}</span><span>Lodearink <span style="color:#91baff">API</span></span></a><div style="margin-top:9px">A public workspace for API requests.</div></div><div class="footer-links"><a href="/docs">Reference</a><a href="/playground">Playground</a><a href="/usage">Usage</a><a href="/status">Status</a><a href="/changelog">Changelog</a></div><span>API base <code style="font:11px var(--mono);color:#acbdd1">api.lodearink.name.ng</code></span></div></footer>`;
   document.querySelectorAll("[data-icon]").forEach(el => { el.innerHTML = icon(el.dataset.icon); });
   if (!document.querySelector(".search-overlay")) {
     const overlay = document.createElement("div");

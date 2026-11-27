@@ -1,0 +1,8 @@
+# MERGE this binding into the private API's existing Wrangler configuration.
+# Keep its name, main, compatibility_date, existing bindings and schedules unchanged.
+[[analytics_engine_datasets]]
+binding = "OBS_EVENTS"
+dataset = "lodearink_requests"
+
+# Add MONITOR_TOKEN with `wrangler secret put MONITOR_TOKEN` in that private project.
+# It must equal the companion Worker's MONITOR_TOKEN; never put it in this file.

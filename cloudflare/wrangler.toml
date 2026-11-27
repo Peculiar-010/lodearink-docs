@@ -1,0 +1,21 @@
+name = "lodearink-observability"
+main = "worker.mjs"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+[vars]
+ACCOUNT_ID = "REPLACE_WITH_YOUR_32_CHARACTER_ACCOUNT_ID"
+DATASET = "lodearink_requests"
+API_ORIGIN = "https://api.lodearink.name.ng"
+DOCS_ORIGIN = "https://lodearink-docs-o4dd.vercel.app"
+
+[[d1_databases]]
+binding = "OBS_DB"
+database_name = "lodearink-observability"
+database_id = "REPLACE_WITH_THE_NEW_DATABASE_ID"
+
+[triggers]
+crons = ["* * * * *"]
+
+# Secrets, not vars: CF_ANALYTICS_TOKEN, MONITOR_TOKEN.
+# Do not copy this complete file over the private API's existing configuration.

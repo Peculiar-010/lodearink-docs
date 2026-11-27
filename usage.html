@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07090d">
+  <title>Request usage — Lodearink API</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/observability.css">
+  <script type="module" src="/js/ui.js"></script>
+  <script type="module" src="/js/usage.js"></script>
+</head>
+<body>
+  <div data-header></div>
+  <main class="container observability" id="usage-root" aria-labelledby="usage-title">
+    <div class="obs-heading">
+      <div class="page-top">
+        <div class="eyebrow">Usage / shared measurements</div>
+        <h1 id="usage-title">Request usage.</h1>
+        <p>Aggregate traffic observed by the shared API adapter. No private request content is collected here.</p>
+      </div>
+      <div class="obs-heading-actions">
+        <div class="obs-freshness" id="usage-freshness" aria-live="polite">Waiting for snapshot</div>
+        <button class="button button-ghost obs-refresh" id="usage-refresh" type="button">Refresh snapshot</button>
+      </div>
+    </div>
+    <div id="usage-message" aria-live="polite"></div>
+    <section aria-label="Request measurements">
+      <div class="obs-metrics" id="usage-metrics">
+        <div class="panel obs-skeleton" aria-hidden="true"></div><div class="panel obs-skeleton" aria-hidden="true"></div>
+        <div class="panel obs-skeleton" aria-hidden="true"></div><div class="panel obs-skeleton" aria-hidden="true"></div><div class="panel obs-skeleton" aria-hidden="true"></div>
+      </div>
+      <div class="obs-toolbar">
+        <div><h2>Observed request volume</h2><span class="obs-filter-note">Window changes the measurements below. Endpoint search filters the endpoint list only.</span></div>
+        <div class="obs-window" role="group" aria-label="Usage time window">
+          <button type="button" data-window="1h" aria-pressed="false">1 hour</button>
+          <button type="button" data-window="24h" aria-pressed="true">24 hours</button>
+          <button type="button" data-window="7d" aria-pressed="false">7 days</button>
+        </div>
+      </div>
+      <section class="panel obs-panel" aria-label="Traffic volume chart">
+        <div class="obs-chart" id="usage-chart" role="img" aria-label="Observed request volume over selected window">Loading shared traffic snapshot…</div>
+        <p class="obs-chart-note">Five-minute observed buckets; the first and current buckets may be partial. Missing buckets are not backfilled as zero.</p>
+      </section>
+      <div class="obs-content-grid">
+        <section class="panel obs-list" aria-labelledby="usage-endpoints-title">
+          <div class="obs-panel obs-section-head"><div><h2 id="usage-endpoints-title">Most-used normalized endpoints</h2><p>Aggregated totals for the selected window.</p></div>
+            <label class="obs-filter-note" for="usage-endpoint-search">Filter this list</label>
+          </div>
+          <div class="obs-panel" style="padding-top:0"><input class="control" id="usage-endpoint-search" type="search" placeholder="Search paths or service names…" aria-label="Filter endpoint list by path or service" style="width:100%;font-size:11px"></div>
+          <div id="usage-endpoints"><div class="obs-empty">Waiting for shared measurements.</div></div>
+        </section>
+        <section class="panel obs-list" aria-labelledby="usage-recent-title">
+          <div class="obs-panel obs-section-head"><div><h2 id="usage-recent-title">Recent sampled activity</h2><p>Sampled observations, not a complete request log.</p></div></div>
+          <div id="usage-recent"><div class="obs-empty">Waiting for shared measurements.</div></div>
+        </section>
+      </div>
+      <p class="workspace-note">Usage includes bots and all non-monitor clients; it is not a count of people. Recent activity is sampled. Request bodies, query strings, headers, credentials, IP addresses and dynamic resource identifiers are never shown.</p>
+    </section>
+  </main>
+  <div data-footer></div>
+</body>
+</html>
