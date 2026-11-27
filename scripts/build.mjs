@@ -48,9 +48,32 @@ async function image(key,model){
 }
 function metadata(html,{title,description,path,image,alt}){
   const url=origin+path;
+  const robots=path==='/404'?'noindex,follow':'index,follow,max-image-preview:large';
+  const websiteSchema={
+    '@context':'https://schema.org',
+    '@type':'WebSite',
+    '@id':origin+'/#website',
+    name:site.name,
+    url:origin+'/',
+    description:site.description,
+    inLanguage:'en'
+  };
+  const pageSchema={
+    '@context':'https://schema.org',
+    '@type':'WebPage',
+    name:title,
+    description,
+    url,
+    inLanguage:'en',
+    isPartOf:{'@id':origin+'/#website'}
+  };
+  const jsonLd=value=>JSON.stringify(value).replaceAll('<','\\u003c');
   const tags=`<meta name="description" content="${escape(description)}">
+<meta name="robots" content="${robots}">
 <link rel="icon" type="image/svg+xml" href="${escape(origin+'/favicon.svg')}">
 <link rel="canonical" href="${escape(url)}">
+<script type="application/ld+json">${jsonLd(websiteSchema)}</script>
+<script type="application/ld+json">${jsonLd(pageSchema)}</script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Lodearink API">
 <meta property="og:title" content="${escape(title)}">
@@ -100,6 +123,42 @@ for(const endpoint of catalog.endpoints){
   }
 }
 await writeFile(join(OUT,'share-manifest.json'),JSON.stringify({origin,generatedAt:new Date().toISOString(),pages:manifest},null,2));
-await writeFile(join(OUT,'robots.txt'),`User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`);
+const crawlerRules=[
+  ['*'],
+  ['Googlebot'],
+  ['Google-Extended'],
+  ['Bingbot'],
+  ['Applebot'],
+  ['OAI-SearchBot'],
+  ['GPTBot'],
+  ['ChatGPT-User'],
+  ['PerplexityBot'],
+  ['ClaudeBot'],
+  ['Claude-SearchBot']
+].map(([agent])=>`User-agent: ${agent}\nAllow: /`).join('\n\n');
+await writeFile(join(OUT,'robots.txt'),`${crawlerRules}\n\nSitemap: ${origin}/sitemap.xml\n`);
 await writeFile(join(OUT,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+manifest.filter(p=>p.path!='/404').map(p=>`<url><loc>${escape(origin+p.path)}</loc></url>`).join('')+'</urlset>');
+const markdownText=value=>String(value??'').replace(/\s+/g,' ').trim().replace(/([\\[\]])/g,'\\$1');
+const llms=[
+  '# Lodearink API',
+  '',
+  `> ${site.description}`,
+  '',
+  '## Start here',
+  `- [Overview](${origin}/)`,
+  `- [API reference](${origin}/docs)`,
+  `- [Interactive playground](${origin}/playground)`,
+  `- [Developer guides](${origin}/guides)`,
+  `- [API status](${origin}/status)`,
+  `- [Changelog](${origin}/changelog)`,
+  '',
+  `## Complete endpoint index`,
+  ...catalog.endpoints.map(endpoint=>`- [${markdownText(endpoint.service||endpoint.category)}: ${markdownText(endpoint.title||endpoint.path)}](${origin+endpointLink('docs',endpoint.path)}): ${markdownText(endpoint.description)}`),
+  '',
+  '## Machine-readable discovery',
+  `- [XML sitemap](${origin}/sitemap.xml)`,
+  `- [Crawler rules](${origin}/robots.txt)`,
+  ''
+].join('\n');
+await writeFile(join(OUT,'llms.txt'),llms);
 console.log(`Built ${manifest.length} pages and ${catalog.endpoints.length+pages.length} sharing images in dist/.`);

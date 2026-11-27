@@ -70,8 +70,12 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
     const filename=page.path==='/'?'index':page.path.slice(1);
     const html=readFileSync(new URL('../dist/'+filename+'.html',import.meta.url),'utf8');
     const {meta,canonical,favicon}=sharingTags(html);
+    const schemas=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)].map(match=>JSON.parse(match[1]));
     assert.equal(canonical,origin+page.path);
     assert.equal(favicon,origin+'/favicon.svg');
+    assert.equal(meta.get('robots'),page.path==='/404'?'noindex,follow':'index,follow,max-image-preview:large');
+    assert.ok(schemas.some(schema=>schema['@type']==='WebSite'&&schema.url===origin+'/'));
+    assert.ok(schemas.some(schema=>schema['@type']==='WebPage'&&schema.url===origin+page.path));
     assert.equal(meta.get('og:url'),canonical);
     assert.equal(meta.get('og:image'),origin+page.image);
     assert.equal(meta.get('og:image:secure_url'),origin+page.image);
@@ -106,7 +110,18 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
   const locations=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
   assert.equal(locations.length,manifest.pages.length-1);
   for(const url of locations)assert.equal(new URL(url).origin,origin);
-  assert.ok(readFileSync(new URL('../dist/robots.txt',import.meta.url),'utf8').includes('Sitemap: '+origin+'/sitemap.xml'));
+  assert.ok(!locations.includes(origin+'/404'));
+  const robots=readFileSync(new URL('../dist/robots.txt',import.meta.url),'utf8');
+  assert.match(robots,/^User-agent: \*\nAllow: \/$/m);
+  for(const bot of ['Googlebot','Google-Extended','Bingbot','Applebot','OAI-SearchBot','GPTBot','ChatGPT-User','PerplexityBot','ClaudeBot','Claude-SearchBot']){
+    assert.ok(robots.includes(`User-agent: ${bot}\nAllow: /`),`${bot} should be allowed to crawl`);
+  }
+  assert.ok(robots.includes('Sitemap: '+origin+'/sitemap.xml'));
+  const llms=readFileSync(new URL('../dist/llms.txt',import.meta.url),'utf8');
+  assert.ok(llms.startsWith('# Lodearink API'));
+  assert.ok(llms.includes(`- [API reference](${origin}/docs)`));
+  assert.ok(llms.includes(`- [XML sitemap](${origin}/sitemap.xml)`));
+  assert.equal(llms.split('\n').filter(line=>line.startsWith('- [')&&line.includes(`](${origin}/docs/`)).length,inventory.length);
   // The configured domain can change without editing the build or the sharing checker.
   for(const filename of ['../scripts/build.mjs','../scripts/check-sharing.mjs']){
     const source=readFileSync(new URL(filename,import.meta.url),'utf8');

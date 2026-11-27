@@ -45,7 +45,7 @@ Tests assert the actual upstream status/body, not an assumed success. Catalog ba
 
 No production deployment or DNS change has been performed by the development setup.
 
-`site.config.json` is the single setting for the public origin. Its `url` must be an HTTPS origin without credentials, path, query or fragment. It currently uses the official docs domain. The static build emits HTML metadata, 1200×630 PNG sharing cards, `sitemap.xml` and `robots.txt`, all using that origin. Every generated page must link `/favicon.svg` from the same origin. Rebuild after retesting to refresh sharing status/timestamps. Bundled DejaVu fonts make build rendering deterministic; their license is in `assets/fonts/`.
+`site.config.json` is the single setting for the public origin. Its `url` must be an HTTPS origin without credentials, path, query or fragment. It currently uses the official docs domain. The static build emits crawler-visible metadata and schema, 1200×630 PNG sharing cards, `robots.txt`, `sitemap.xml`, and `llms.txt`, all using that origin. `llms.txt` is a supplemental, non-standard index and does not replace the XML sitemap. The owner requested broad search and AI access, so crawler rules allow major search, AI retrieval, and model-training agents; do not narrow these rules or change the API origin without permission. Every generated page must link `/favicon.svg` from the same origin. Rebuild after retesting to refresh sharing status/timestamps. Bundled DejaVu fonts make build rendering deterministic; their license is in `assets/fonts/`.
 
 ### Sharing-image verification and publishing
 

@@ -50,9 +50,14 @@ export async function checkSharing({expectedOrigin,fetchOrigin=expectedOrigin,fe
   for(const path of paths){
     const response=await fetcher(new URL(path,fetchOrigin),{headers,signal:AbortSignal.timeout(20000)});
     assert.equal(response.status,200,`${path}: HTTP ${response.status}`);
-    const {meta,canonical,favicon}=sharingTags(await response.text());
+    const html=await response.text();
+    const {meta,canonical,favicon}=sharingTags(html);
     assert.equal(canonical,expectedOrigin+path,`${path}: incorrect canonical URL`);
     assert.equal(favicon,expectedOrigin+'/favicon.svg',`${path}: incorrect favicon URL`);
+    assert.equal(meta.get('robots'),'index,follow,max-image-preview:large',`${path}: page is not indexable`);
+    const schemas=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)].map(match=>JSON.parse(match[1]));
+    assert.ok(schemas.some(schema=>schema['@type']==='WebSite'&&schema.url===expectedOrigin+'/'),`${path}: missing WebSite schema`);
+    assert.ok(schemas.some(schema=>schema['@type']==='WebPage'&&schema.url===expectedOrigin+path),`${path}: missing WebPage schema`);
     assert.equal(meta.get('og:url'),canonical,`${path}: incorrect Open Graph URL`);
     assert.ok(meta.get('og:title'));assert.ok(meta.get('og:description'));
     const image=new URL(meta.get('og:image'));
@@ -75,7 +80,31 @@ export async function checkSharing({expectedOrigin,fetchOrigin=expectedOrigin,fe
   assert.match(icon.headers.get('content-type')||'',/^image\/svg\+xml\b/i);
   assert.match(await icon.text(),/<svg\b/i,'Favicon response is not SVG');
   console.log('PASS /favicon.svg: linked and served');
-  return {pages:paths.length,images:seen.size};
+  const robotsResponse=await fetcher(new URL('/robots.txt',fetchOrigin),{headers,signal:AbortSignal.timeout(20000)});
+  assert.equal(robotsResponse.status,200,`/robots.txt: HTTP ${robotsResponse.status}`);
+  assert.match(robotsResponse.headers.get('content-type')||'',/^text\/plain\b/i);
+  const robots=await robotsResponse.text();
+  assert.match(robots,/^User-agent: \*\nAllow: \/$/m);
+  for(const bot of ['Googlebot','Google-Extended','Bingbot','OAI-SearchBot','GPTBot','PerplexityBot','ClaudeBot','Claude-SearchBot']){
+    assert.ok(robots.includes(`User-agent: ${bot}\nAllow: /`),`/robots.txt: ${bot} is not allowed`);
+  }
+  assert.ok(robots.includes(`Sitemap: ${expectedOrigin}/sitemap.xml`));
+  const sitemapResponse=await fetcher(new URL('/sitemap.xml',fetchOrigin),{headers,signal:AbortSignal.timeout(20000)});
+  assert.equal(sitemapResponse.status,200,`/sitemap.xml: HTTP ${sitemapResponse.status}`);
+  assert.match(sitemapResponse.headers.get('content-type')||'',/xml/i);
+  const sitemap=await sitemapResponse.text();
+  assert.match(sitemap,/^<\?xml version="1\.0"/);
+  const urls=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match=>match[1]);
+  assert.ok(urls.length>=400,'sitemap is missing generated endpoint pages');
+  for(const url of urls)assert.equal(new URL(url).origin,expectedOrigin,`sitemap contains a noncanonical host: ${url}`);
+  assert.ok(!urls.includes(expectedOrigin+'/404'));
+  const llmsResponse=await fetcher(new URL('/llms.txt',fetchOrigin),{headers,signal:AbortSignal.timeout(20000)});
+  assert.equal(llmsResponse.status,200,`/llms.txt: HTTP ${llmsResponse.status}`);
+  const llms=await llmsResponse.text();
+  assert.ok(llms.includes('# Lodearink API'));
+  assert.ok(llms.includes(`(${expectedOrigin}/sitemap.xml)`));
+  console.log(`PASS /robots.txt, /sitemap.xml (${urls.length} pages), and /llms.txt`);
+  return {pages:paths.length,images:seen.size,indexedUrls:urls.length};
 }
 
 async function main(){
