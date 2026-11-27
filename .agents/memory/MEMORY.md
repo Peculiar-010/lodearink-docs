@@ -1,2 +1,3 @@
 - [Vercel fork synchronization](vercel-fork.md) — the hosting build source can differ from the workspace Git remote; verify both before claiming a pushed fix reached Vercel.
 - [Service grouping rules](service-grouping.md) — social downloaders must contain social-media services, not app stores or unrelated download tools.
+- [Hosting and API privacy](hosting-and-api-privacy.md) — use the temporary Vercel origin; the API stays in a private repository on Cloudflare Free.
