@@ -10,7 +10,11 @@ const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const OUT=join(ROOT,'dist');
 const site=JSON.parse(await readFile(join(ROOT,'site.config.json'),'utf8'));
 const catalog=JSON.parse(await readFile(join(ROOT,'data/catalog.json'),'utf8'));
-const origin=new URL(site.url).origin;
+const siteUrl=new URL(site.url);
+if(siteUrl.protocol!=='https:'||siteUrl.username||siteUrl.password||siteUrl.pathname!=='/'||siteUrl.search||siteUrl.hash){
+  throw new Error('site.config.json url must be a public HTTPS origin, without a path, credentials, query or fragment.');
+}
+const origin=siteUrl.origin;
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pages=[
   ['index','/','Lodearink API — Build more. Integrate faster.',site.description],

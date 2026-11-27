@@ -75,7 +75,7 @@
     {
       "path": "/aiov2",
       "service": "Aio All In One Downloader",
-      "category": "Social Downloaders",
+      "category": "Media Downloaders",
       "requests": {
         "GET": {
           "query": {
@@ -87,7 +87,7 @@
     {
       "path": "/aio",
       "service": "Aio All In One Downloader",
-      "category": "Social Downloaders",
+      "category": "Media Downloaders",
       "requests": {
         "GET": {
           "query": {
@@ -907,7 +907,7 @@
     {
       "path": "/spotsearch",
       "service": "Spotify Search",
-      "category": "Search",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -919,7 +919,7 @@
     {
       "path": "/spotsearch/song",
       "service": "Spotify Search",
-      "category": "Search",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -931,7 +931,7 @@
     {
       "path": "/spotsearch/random",
       "service": "Spotify Search",
-      "category": "Search",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {}
@@ -941,7 +941,7 @@
     {
       "path": "/spotsearch/cover",
       "service": "Spotify Search",
-      "category": "Search",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -953,7 +953,7 @@
     {
       "path": "/spotsearch/links",
       "service": "Spotify Search",
-      "category": "Search",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -965,7 +965,7 @@
     {
       "path": "/spotsearch/titles",
       "service": "Spotify Search",
-      "category": "Search",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -977,7 +977,7 @@
     {
       "path": "/spotsearch/artist",
       "service": "Spotify Search",
-      "category": "Search",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -1088,7 +1088,7 @@
     {
       "path": "/spdl/info",
       "service": "Spotify Downloader",
-      "category": "Social Downloaders",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -1100,7 +1100,7 @@
     {
       "path": "/spdl/preview",
       "service": "Spotify Downloader",
-      "category": "Social Downloaders",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -1112,7 +1112,7 @@
     {
       "path": "/spdl/match",
       "service": "Spotify Downloader",
-      "category": "Social Downloaders",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -1125,7 +1125,7 @@
     {
       "path": "/spdl/url",
       "service": "Spotify Downloader",
-      "category": "Social Downloaders",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -1138,7 +1138,7 @@
     {
       "path": "/spdl/stream",
       "service": "Spotify Downloader",
-      "category": "Social Downloaders",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -1151,7 +1151,7 @@
     {
       "path": "/spdl/download",
       "service": "Spotify Downloader",
-      "category": "Social Downloaders",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -1164,7 +1164,7 @@
     {
       "path": "/spdl/batch",
       "service": "Spotify Downloader",
-      "category": "Social Downloaders",
+      "category": "Audio & Music",
       "requests": {
         "GET": {
           "query": {
@@ -1305,7 +1305,7 @@
     {
       "path": "/hn/top",
       "service": "Hacker News",
-      "category": "Social Downloaders",
+      "category": "Developer News",
       "requests": {
         "GET": {
           "query": {
@@ -1317,7 +1317,7 @@
     {
       "path": "/hn/new",
       "service": "Hacker News",
-      "category": "Social Downloaders",
+      "category": "Developer News",
       "requests": {
         "GET": {
           "query": {
@@ -1329,7 +1329,7 @@
     {
       "path": "/hn/best",
       "service": "Hacker News",
-      "category": "Social Downloaders",
+      "category": "Developer News",
       "requests": {
         "GET": {
           "query": {
@@ -1341,7 +1341,7 @@
     {
       "path": "/hn/ask",
       "service": "Hacker News",
-      "category": "Social Downloaders",
+      "category": "Developer News",
       "requests": {
         "GET": {
           "query": {
@@ -1353,7 +1353,7 @@
     {
       "path": "/hn/show",
       "service": "Hacker News",
-      "category": "Social Downloaders",
+      "category": "Developer News",
       "requests": {
         "GET": {
           "query": {
@@ -1365,7 +1365,7 @@
     {
       "path": "/hn/job",
       "service": "Hacker News",
-      "category": "Social Downloaders",
+      "category": "Developer News",
       "requests": {
         "GET": {
           "query": {
@@ -1377,7 +1377,7 @@
     {
       "path": "/hn/item",
       "service": "Hacker News",
-      "category": "Social Downloaders",
+      "category": "Developer News",
       "requests": {
         "GET": {
           "query": {
@@ -1389,7 +1389,7 @@
     {
       "path": "/hn/user",
       "service": "Hacker News",
-      "category": "Social Downloaders",
+      "category": "Developer News",
       "requests": {
         "GET": {
           "query": {
@@ -1401,7 +1401,7 @@
     {
       "path": "/hn/comments",
       "service": "Hacker News",
-      "category": "Social Downloaders",
+      "category": "Developer News",
       "requests": {
         "GET": {
           "query": {
@@ -2061,7 +2061,7 @@
     {
       "path": "/mediafire/download",
       "service": "Mediafire",
-      "category": "Social Downloaders",
+      "category": "File Downloads",
       "requests": {
         "GET": {
           "query": {
@@ -2073,7 +2073,7 @@
     {
       "path": "/uptodown/search",
       "service": "Uptodown",
-      "category": "Social Downloaders",
+      "category": "App Stores",
       "requests": {
         "GET": {
           "query": {
@@ -2085,7 +2085,7 @@
     {
       "path": "/uptodown/info",
       "service": "Uptodown",
-      "category": "Social Downloaders",
+      "category": "App Stores",
       "requests": {
         "GET": {
           "query": {
@@ -2097,7 +2097,7 @@
     {
       "path": "/uptodown/versions",
       "service": "Uptodown",
-      "category": "Social Downloaders",
+      "category": "App Stores",
       "requests": {
         "GET": {
           "query": {
@@ -2109,7 +2109,7 @@
     {
       "path": "/uptodown/download",
       "service": "Uptodown",
-      "category": "Social Downloaders",
+      "category": "App Stores",
       "requests": {
         "GET": {
           "query": {
@@ -2121,7 +2121,7 @@
     {
       "path": "/playstore/search",
       "service": "Play Store",
-      "category": "Social Downloaders",
+      "category": "App Stores",
       "requests": {
         "GET": {
           "query": {
@@ -2133,7 +2133,7 @@
     {
       "path": "/playstore/detail",
       "service": "Play Store",
-      "category": "Social Downloaders",
+      "category": "App Stores",
       "requests": {
         "GET": {
           "query": {
@@ -2145,7 +2145,7 @@
     {
       "path": "/playstore/app",
       "service": "Play Store",
-      "category": "Social Downloaders",
+      "category": "App Stores",
       "requests": {
         "GET": {
           "query": {

@@ -17,23 +17,58 @@ IMAGE = "https://i.ibb.co/V07DrJhG/image-1795678603774.jpg"
 VIDEO = "https://www.youtube.com/watch?v=Wi-HjAXdKoA"
 SPOTIFY = "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b"
 SAFE = re.compile(r"^/(health$|search$|bulktext/search$|images/search$|npm/|pypi/|github/|hn/|football/|ytsearch/|spotsearch/|bing/web/|anime/(catalog|characters|series|search)|movie/(titles|search|tv$))")
+SOCIAL_SERVICES = frozenset(("tiktok", "fb", "twitter", "ig", "pinterest", "reddit", "ytdl"))
+SERVICE_GROUPS = {
+    "health": "Overview",
+    "llama": "Text AI",
+    "visionai": "Vision AI",
+    "img": "Image AI",
+    "aivideo": "Video AI",
+    "removebg": "Media Tools", "bg": "Media Tools", "videobg": "Media Tools",
+    "upload": "Uploads",
+    "football": "Sports",
+    "pypi": "Developer Tools", "npm": "Developer Tools", "github": "Developer Tools", "web2apk": "Developer Tools",
+    "hn": "Developer News",
+    "anime": "Entertainment", "movie": "Entertainment",
+    "tts": "Audio & Music", "speak": "Audio & Music", "music": "Audio & Music",
+    "lyricsdb": "Audio & Music", "lyricfind": "Audio & Music", "spdl": "Audio & Music", "spotsearch": "Audio & Music",
+    "tmail": "Utilities", "whatsapp-channel": "Utilities", "whatsapp-group": "Utilities",
+    "search": "Search", "bulktext": "Search", "images": "Search", "bing": "Search", "ytsearch": "Search",
+    "playstore": "App Stores", "uptodown": "App Stores",
+    "mediafire": "File Downloads",
+    "aio": "Media Downloaders", "aiov2": "Media Downloaders",
+}
 
 
 def group(path):
-    if path == "/health": return "Overview"
-    if path.startswith("/llama"): return "Text AI"
-    if path.startswith("/visionai"): return "Vision AI"
-    if path == "/img" or re.match(r"/image/(generate|flux|z-turbo)", path): return "Image AI"
-    if path.startswith("/aivideo"): return "Video AI"
-    if path.startswith(("/removebg", "/bg/", "/videobg", "/image/upscale", "/image/proxy")): return "Media Tools"
-    if path.startswith("/upload"): return "Uploads"
-    if path.startswith(("/football",)): return "Sports"
-    if path.startswith(("/pypi", "/npm", "/github", "/web2apk")): return "Developer Tools"
-    if path.startswith(("/anime", "/movie")): return "Entertainment"
-    if path.startswith(("/tts", "/speak", "/music", "/lyrics", "/lyricfind")): return "Audio & Music"
-    if path.startswith(("/tmail", "/whatsapp")): return "Utilities"
-    if path.startswith(("/search", "/bulktext", "/images/search", "/bing", "/ytsearch", "/spotsearch")) or path in ("/pinterest/search", "/reddit/search"): return "Search"
-    return "Social Downloaders"
+    """Classify services explicitly; downloading alone does not make a service social."""
+    service = path.strip("/").split("/")[0]
+    if path in ("/pinterest/search", "/reddit/search"):
+        return "Search"
+    if service == "image":
+        operation = path.strip("/").split("/")[1:2]
+        if operation and operation[0] in ("proxy", "upscale"): return "Media Tools"
+        if operation and operation[0] in ("generate", "flux", "z-turbo"): return "Image AI"
+        return "Other Tools"
+    if service in SOCIAL_SERVICES:
+        return "Social Downloaders"
+    return SERVICE_GROUPS.get(service, "Other Tools")
+
+
+def regroup_inventory(root):
+    """Update taxonomy offline, preserving all request contracts and live evidence."""
+    paths = [root / "data/contracts.json", root / "data/catalog.json"]
+    documents = [json.loads(path.read_text()) for path in paths]
+    inventories = [[entry["path"] for entry in doc["endpoints"]] for doc in documents]
+    if any(len(items) != len(set(items)) for items in inventories) or set(inventories[0]) != set(inventories[1]):
+        raise ValueError("Cannot regroup: contracts and catalog must contain the same unique routes.")
+    for document in documents:
+        for entry in document["endpoints"]:
+            entry["category"] = group(entry["path"])
+    documents[1]["endpoints"].sort(key=lambda entry: (entry["category"], entry["service"], entry["path"]))
+    for path, document in zip(paths, documents):
+        path.write_text(json.dumps(document, indent=2))
+    print(f"Regrouped {len(inventories[0])} routes offline. Request contracts, evidence and timestamps were preserved.")
 
 
 def parse_spec(path):
@@ -322,11 +357,20 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--spec")
     parser.add_argument("--resume", action="store_true", help="Resume an interrupted verification run from its local checkpoint.")
+    parser.add_argument("--regroup-only", action="store_true", help="Refresh service groups without making any API requests.")
     args = parser.parse_args()
+    if args.regroup_only:
+        if args.spec or args.resume: parser.error("--regroup-only cannot be combined with --spec or --resume")
+        regroup_inventory(ROOT)
+        return
     contracts_path = ROOT / "data/contracts.json"
     if args.spec:
         contracts_path.write_text(json.dumps({"version": 2, "endpoints": parse_spec(args.spec)}, indent=2))
-    entries = json.loads(contracts_path.read_text())["endpoints"]
+    contracts = json.loads(contracts_path.read_text())
+    for entry in contracts["endpoints"]:
+        entry["category"] = group(entry["path"])
+    contracts_path.write_text(json.dumps(contracts, indent=2))
+    entries = contracts["endpoints"]
     fingerprint = hashlib.sha256(json.dumps(entries, sort_keys=True).encode()).hexdigest()
     checkpoint_path = ROOT / "generated-artifacts/discovery-progress.json"
     checkpoint_path.parent.mkdir(parents=True, exist_ok=True)

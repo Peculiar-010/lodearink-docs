@@ -12,6 +12,8 @@ The external API is `https://api.lodearink.name.ng`. This project does not chang
 
 The maintainer's replacement list is authoritative: `data/contracts.json` contains exactly the provided concrete routes and formats. `data/catalog.json` adds live evidence. **Do not add routes from health/directory responses or expand generic MODEL_SLUG examples. Llama is the only text-model service.** Group services by purpose (Text AI, Vision AI, Social Downloaders, etc.). Keep public copy for developers; never address the site owner or refer to their brief.
 
+Service groups come from the explicit namespace rules in `scripts/update_catalog.py`: Social Downloaders is reserved for social-media providers; Play Store/Uptodown are App Stores, Hacker News is Developer News, MediaFire is File Downloads, Spotify belongs in Audio & Music, and the all-in-one tools are Media Downloaders. Unrecognized services fall back to Other Tools, never Social Downloaders. `python scripts/update_catalog.py --regroup-only` refreshes both tracked JSON inventories **offline**, preserving every request contract, response, status and timestamp. It refuses mismatched or duplicate inventories before writing.
+
 To deliberately retest this inventory: `npm run discover` (`python scripts/update_catalog.py`). This makes real external requests, including generation and file uploads; do not schedule it or run it unintentionally. `--resume` reuses a local checkpoint from an interrupted run. `--spec PATH` replaces the source contracts from a new maintainer file. Legacy discovery scripts are historical and must not overwrite the restricted inventory. Temporary files use the OS temporary directory; resumable output stays in ignored `generated-artifacts/`. Probes use curl because the API's bot filter blocked Python urllib.
 
 Evidence contains actual request inputs, timestamps, HTTP status, duration, content type and response snippets limited to 5,000 characters. Secret-like response fields are redacted. A successful health/service directory is not proof that its operation works. Validate actual operations with real image/video inputs and returned resource IDs. Requiredness is not invented when the contract does not specify it.
@@ -33,13 +35,25 @@ Tests assert the actual upstream status/body, not an assumed success. Static bad
 3. `vercel.json` enables clean URLs and security/cache headers. `.vercelignore` retains required build scripts and fonts while excluding attachments, tests, generated files and workspace internals.
    Vercel uses `npm ci --omit=dev --no-audit --no-fund`: the sharing-image renderer is a build dependency; Playwright is development-only. Keep committed lockfile tarball URLs on the public npm registry with their integrity hashes intact. Internal workspace registry hostnames cannot resolve on Vercel. `tests/deployment.test.js` guards this portability requirement.
 4. Verify `/`, `/docs`, `/playground`, `/status`, `/guides`, `/changelog`, `/docs/visionai/qwen/analyze`, its sharing PNG, and an invalid route's 404 page. Legacy `.html` links redirect to clean URLs.
-5. Add **docs.lodearink.name.ng** in this Vercel project’s Domains settings. Apply only the DNS record Vercel supplies for the **docs** subdomain.
+5. The current public docs origin is **https://lodearink-docs-o4dd.vercel.app**. Do not switch to the official domain or change DNS until the owner requests it.
 6. Do not change the root domain or any DNS/configuration for **api.lodearink.name.ng**. It remains the existing API service.
 7. Confirm HTTPS and CORS from the deployed docs origin. Browser console failures may be network/CORS restrictions; compare against the generated cURL request.
 
 No production deployment or DNS change has been performed by the development setup.
 
-`site.config.json` specifies the intended canonical docs domain supplied by the maintainer, not proof of deployment. Set it to the actual public docs origin before publishing elsewhere. The static build emits HTML metadata, 1200×630 PNG sharing cards, `sitemap.xml` and `robots.txt`. Rebuild after retesting to refresh sharing status/timestamps. Bundled DejaVu fonts make build rendering deterministic; their license is in `assets/fonts/`.
+`site.config.json` is the single setting for the public origin. Its `url` must be an HTTPS origin without credentials, path, query or fragment. It currently uses the working Vercel address. The static build emits HTML metadata, 1200×630 PNG sharing cards, `sitemap.xml` and `robots.txt`, all using that origin. Rebuild after retesting to refresh sharing status/timestamps. Bundled DejaVu fonts make build rendering deterministic; their license is in `assets/fonts/`.
+
+### Sharing-image verification and publishing
+
+The original public pages referenced `docs.lodearink.name.ng`, where images returned 404 even though the PNGs existed on Vercel. A passing local build is **not** proof that the public site has received a correction.
+
+1. Run `npm run build && npm test`. The regression suite checks crawler-visible canonical/OG/Twitter URLs for every generated page, decompresses all unique PNGs, checks 1200×630 dimensions and verifies group exclusions.
+2. With the preview running, run `node scripts/check-sharing.mjs --preview "https://$REPLIT_DEV_DOMAIN"`. It checks delivery through the preview while requiring metadata to name the configured public origin. It does not claim to verify the published update.
+3. Check which GitHub repository Vercel actually builds. Previously it built a fork while the workspace remote pointed to the parent; pushing the parent alone does not update that fork. Sync the hosting fork when required, without force-pushing over its changes or changing the hosting connection.
+4. The owner publishes through their existing Vercel flow. After publishing, run `node scripts/check-sharing.mjs` with no arguments. It uses the configured public origin, acts as a social crawler and verifies representative general, docs and playground pages plus their actual PNG URLs. A stale/wrong image host makes it fail rather than silently accepting descriptions.
+5. If a social platform cached the earlier broken preview, request a fresh scrape using that platform's sharing debugger after the public check passes.
+
+When the official domain is ready, connect it to the existing Vercel site, change **only** `site.config.json` → `url`, rebuild and publish, then repeat the public sharing check. Do not change the API's origin or DNS.
 
 ## Local browser storage
 

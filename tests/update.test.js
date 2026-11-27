@@ -4,8 +4,10 @@ import {readFileSync,existsSync} from 'node:fs';
 import {taskFollowup} from '../js/task-followup.js';
 import {routeSlug,endpointLink,matchEndpointLocation} from '../js/routes.js';
 import {createOgSvg} from '../scripts/og-template.mjs';
+import {inspectPng,sharingTags} from '../scripts/check-sharing.mjs';
 const data=JSON.parse(readFileSync(new URL('../data/catalog.json',import.meta.url),'utf8'));
 const inventory=data.endpoints;
+const site=JSON.parse(readFileSync(new URL('../site.config.json',import.meta.url),'utf8'));
 test('all endpoint links use unique extensionless paths',()=>{
   for(const page of ['docs','playground']){
     const links=inventory.map(e=>endpointLink(page,e.path));
@@ -47,16 +49,53 @@ test('the sharing renderer escapes markup and uses only supplied availability',(
 });
 test('built endpoint HTML exposes individual social metadata without JavaScript',()=>{
   const manifest=JSON.parse(readFileSync(new URL('../dist/share-manifest.json',import.meta.url),'utf8'));
+  const origin=new URL(site.url).origin;
+  assert.equal(manifest.origin,origin);
   assert.equal(manifest.pages.length,inventory.length*2+7);
+  const decoded=new Set();
   for(const page of manifest.pages){
     const filename=page.path==='/'?'index':page.path.slice(1);
     const html=readFileSync(new URL('../dist/'+filename+'.html',import.meta.url),'utf8');
-    assert.ok(html.includes('property="og:image"'));assert.ok(html.includes('name="twitter:card"'));
-    assert.ok(html.includes(manifest.origin+page.path));
+    const {meta,canonical}=sharingTags(html);
+    assert.equal(canonical,origin+page.path);
+    assert.equal(meta.get('og:url'),canonical);
+    assert.equal(meta.get('og:image'),origin+page.image);
+    assert.equal(meta.get('og:image:secure_url'),origin+page.image);
+    assert.equal(meta.get('twitter:image'),origin+page.image);
+    assert.equal(meta.get('twitter:card'),'summary_large_image');
+    assert.equal(meta.get('og:image:type'),'image/png');
+    assert.equal(meta.get('og:image:width'),'1200');
+    assert.equal(meta.get('og:image:height'),'630');
+    assert.ok(meta.get('og:image:alt'));
+    for(const former of ['https://docs.lodearink.name.ng','https://lodearink-docs-o4dd.vercel.app']){
+      if(former!==origin)assert.ok(!html.includes(former),`${page.path}: obsolete origin in HTML`);
+    }
     const png=new URL('../dist'+page.image,import.meta.url);
     assert.ok(existsSync(png));
     const buffer=readFileSync(png);assert.equal(buffer.toString('hex',0,8),'89504e470d0a1a0a');
     assert.equal(buffer.readUInt32BE(16),1200);assert.equal(buffer.readUInt32BE(20),630);
+    if(!decoded.has(page.image)){inspectPng(buffer);decoded.add(page.image);}
     if(page.endpoint){assert.ok(html.includes(page.endpoint));assert.ok(html.includes('Status: '+page.status.state.replaceAll('-',' ')));}
   }
+  assert.equal(decoded.size,inventory.length+7);
+  const sitemap=readFileSync(new URL('../dist/sitemap.xml',import.meta.url),'utf8');
+  const locations=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
+  assert.equal(locations.length,manifest.pages.length-1);
+  for(const url of locations)assert.equal(new URL(url).origin,origin);
+  assert.ok(readFileSync(new URL('../dist/robots.txt',import.meta.url),'utf8').includes('Sitemap: '+origin+'/sitemap.xml'));
+  // The configured domain can change without editing the build or the sharing checker.
+  for(const filename of ['../scripts/build.mjs','../scripts/check-sharing.mjs']){
+    const source=readFileSync(new URL(filename,import.meta.url),'utf8');
+    assert.doesNotMatch(source,/https:\/\/(?:docs\.lodearink\.name\.ng|lodearink-docs-o4dd\.vercel\.app)/);
+  }
+});
+test('sharing validation rejects truncated images and invalid compressed pixel data',()=>{
+  const manifest=JSON.parse(readFileSync(new URL('../dist/share-manifest.json',import.meta.url),'utf8'));
+  const png=readFileSync(new URL('../dist'+manifest.pages[0].image,import.meta.url));
+  assert.throws(()=>inspectPng(png.subarray(0,50)));
+  const corrupt=Buffer.from(png);
+  for(let offset=8;offset+12<=corrupt.length;offset+=12+corrupt.readUInt32BE(offset)){
+    if(corrupt.toString('ascii',offset+4,offset+8)==='IDAT'){corrupt[offset+8]^=255;break;}
+  }
+  assert.throws(()=>inspectPng(corrupt));
 });
