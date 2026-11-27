@@ -31,6 +31,7 @@ Tests assert the actual upstream status/body, not an assumed success. Static bad
 1. Import this repository into Vercel.
 2. Choose **Other** as the framework preset. Build command: `npm run build`. Output directory: `dist`. Node installs the build-time SVG rasterizer; browser code remains framework-free. No environment variables are needed.
 3. `vercel.json` enables clean URLs and security/cache headers. `.vercelignore` retains required build scripts and fonts while excluding attachments, tests, generated files and workspace internals.
+   Vercel uses `npm ci --omit=dev --no-audit --no-fund`: the sharing-image renderer is a build dependency; Playwright is development-only. Keep committed lockfile tarball URLs on the public npm registry with their integrity hashes intact. Internal workspace registry hostnames cannot resolve on Vercel. `tests/deployment.test.js` guards this portability requirement.
 4. Verify `/`, `/docs`, `/playground`, `/status`, `/guides`, `/changelog`, `/docs/visionai/qwen/analyze`, its sharing PNG, and an invalid route's 404 page. Legacy `.html` links redirect to clean URLs.
 5. Add **docs.lodearink.name.ng** in this Vercel project’s Domains settings. Apply only the DNS record Vercel supplies for the **docs** subdomain.
 6. Do not change the root domain or any DNS/configuration for **api.lodearink.name.ng**. It remains the existing API service.
