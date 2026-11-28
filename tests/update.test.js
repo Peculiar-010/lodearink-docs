@@ -99,6 +99,8 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
     if(!decoded.has(page.image)){inspectPng(buffer);decoded.add(page.image);}
     if(page.endpoint){assert.ok(html.includes(page.endpoint));assert.ok(html.includes('Status: '+page.status.state.replaceAll('-',' ')));}
   }
+  const homeHtml=readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
+  assert.match(homeHtml,/<meta name="google-site-verification" content="RPiGy8r3svoq47pjU3RvLSWPP0vpPTeb8HdwPQX0FjY">/);
   assert.ok(existsSync(new URL('../dist/favicon.svg',import.meta.url)));
   assert.match(readFileSync(new URL('../dist/favicon.svg',import.meta.url),'utf8'),/<svg\b/);
   assert.equal(decoded.size,inventory.length+8);
