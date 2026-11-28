@@ -114,10 +114,12 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
   assert.equal((homeHtml.match(/class="panel category-card"/g)||[]).length,new Set(inventory.map(endpoint=>endpoint.category)).size);
   const docsHtml=readFileSync(new URL('../dist/docs.html',import.meta.url),'utf8');
   assert.doesNotMatch(docsHtml,/Loading endpoints|Choose an endpoint/i);
+  assert.ok(docsHtml.includes(`${inventory.length} documented routes across ${new Set(inventory.map(endpoint=>endpoint.category)).size} categories`));
+  assert.ok(docsHtml.includes(data.baseUrl));
   assert.equal((docsHtml.match(/data-path="/g)||[]).length,inventory.length);
   const docsSchemas=[...docsHtml.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)].map(match=>JSON.parse(match[1]));
   assert.equal(docsSchemas.find(schema=>schema['@type']==='ItemList')?.numberOfItems,inventory.length);
-  const searchPage=manifest.find(page=>page.path===endpointLink('docs','/search'));
+  const searchPage=manifest.pages.find(page=>page.path===endpointLink('docs','/search'));
   const searchHtml=readFileSync(new URL('../dist/'+searchPage.path.slice(1)+'.html',import.meta.url),'utf8');
   assert.ok(searchHtml.includes('https://api.lodearink.name.ng'));
   assert.ok(searchHtml.includes('Ada Lovelace'));

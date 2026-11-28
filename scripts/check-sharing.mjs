@@ -52,12 +52,14 @@ export async function checkSharing({expectedOrigin,fetchOrigin=expectedOrigin,fe
     assert.equal(response.status,200,`${path}: HTTP ${response.status}`);
     const html=await response.text();
     const {meta,canonical,favicon}=sharingTags(html);
-    assert.equal(canonical,expectedOrigin+path,`${path}: incorrect canonical URL`);
+    const canonicalPath=path.startsWith('/playground/')?path.replace(/^\/playground\//,'/docs/'):path;
+    const noIndex=path.startsWith('/playground/');
+    assert.equal(canonical,expectedOrigin+canonicalPath,`${path}: incorrect canonical URL`);
     assert.equal(favicon,expectedOrigin+'/favicon.svg',`${path}: incorrect favicon URL`);
-    assert.equal(meta.get('robots'),'index,follow,max-image-preview:large',`${path}: page is not indexable`);
+    assert.equal(meta.get('robots'),noIndex?'noindex,follow':'index,follow,max-image-preview:large',`${path}: incorrect indexing directive`);
     const schemas=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)].map(match=>JSON.parse(match[1]));
     assert.ok(schemas.some(schema=>schema['@type']==='WebSite'&&schema.url===expectedOrigin+'/'),`${path}: missing WebSite schema`);
-    assert.ok(schemas.some(schema=>schema['@type']==='WebPage'&&schema.url===expectedOrigin+path),`${path}: missing WebPage schema`);
+    assert.ok(schemas.some(schema=>schema['@type']==='WebPage'&&schema.url===expectedOrigin+canonicalPath),`${path}: missing WebPage schema`);
     assert.ok(schemas.some(schema=>schema['@type']==='Brand'&&schema.name==='Lodearink'),`${path}: missing Lodearink brand identity`);
     if(path==='/'){
       assert.ok(html.includes('Lodearink API</strong> is a developer API'),'/ : missing crawlable product description');
@@ -67,6 +69,8 @@ export async function checkSharing({expectedOrigin,fetchOrigin=expectedOrigin,fe
     if(path==='/docs'){
       assert.doesNotMatch(html,/Loading endpoints|Choose an endpoint/i,'/docs: catalog is not server-rendered');
       assert.ok((html.match(/data-path="/g)||[]).length>=200,'/docs: static endpoint links are missing');
+      assert.match(html,/\d+ documented routes across \d+ categories/,'/docs: catalog summary is missing');
+      assert.ok(!html.includes('STATIC_ENDPOINT_LIST'),' /docs: unresolved build marker');
       assert.ok(schemas.some(schema=>schema['@type']==='ItemList'&&schema.numberOfItems>=200),'/docs: endpoint list schema is missing');
     }
     if(path==='/docs/visionai/qwen/analyze'){
