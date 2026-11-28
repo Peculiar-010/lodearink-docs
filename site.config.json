@@ -1,5 +1,5 @@
 {
   "name": "Lodearink API",
   "url": "https://docs.lodearink.name.ng",
-  "description": "APIs for AI, media, search and developer tools. Explore the reference and send live requests."
+  "description": "Lodearink API is a developer-facing HTTP API with documentation and an interactive request playground on docs.lodearink.name.ng. The API is hosted at api.lodearink.name.ng and includes documented routes for AI, media, search, entertainment, developer tools, and more. Review each endpoint page for its method, parameters, examples, and latest catalog status snapshot."
 }

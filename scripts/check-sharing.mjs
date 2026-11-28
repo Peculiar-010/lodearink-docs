@@ -58,6 +58,21 @@ export async function checkSharing({expectedOrigin,fetchOrigin=expectedOrigin,fe
     const schemas=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)].map(match=>JSON.parse(match[1]));
     assert.ok(schemas.some(schema=>schema['@type']==='WebSite'&&schema.url===expectedOrigin+'/'),`${path}: missing WebSite schema`);
     assert.ok(schemas.some(schema=>schema['@type']==='WebPage'&&schema.url===expectedOrigin+path),`${path}: missing WebPage schema`);
+    assert.ok(schemas.some(schema=>schema['@type']==='Brand'&&schema.name==='Lodearink'),`${path}: missing Lodearink brand identity`);
+    if(path==='/'){
+      assert.ok(html.includes('Lodearink API</strong> is a developer API'),'/ : missing crawlable product description');
+      assert.ok(html.includes('https://api.lodearink.name.ng'),'/ : missing API base URL');
+      assert.doesNotMatch(html,/Loading (?:API catalog|endpoints|categories)/i,'/: catalog is not server-rendered');
+    }
+    if(path==='/docs'){
+      assert.doesNotMatch(html,/Loading endpoints|Choose an endpoint/i,'/docs: catalog is not server-rendered');
+      assert.ok((html.match(/data-path="/g)||[]).length>=200,'/docs: static endpoint links are missing');
+      assert.ok(schemas.some(schema=>schema['@type']==='ItemList'&&schema.numberOfItems>=200),'/docs: endpoint list schema is missing');
+    }
+    if(path==='/docs/visionai/qwen/analyze'){
+      assert.ok(html.includes('API base URL'),'endpoint detail is not server-rendered');
+      assert.ok(html.includes('Parameters'),'endpoint parameters are not server-rendered');
+    }
     assert.equal(meta.get('og:url'),canonical,`${path}: incorrect Open Graph URL`);
     assert.ok(meta.get('og:title'));assert.ok(meta.get('og:description'));
     const image=new URL(meta.get('og:image'));
@@ -95,7 +110,8 @@ export async function checkSharing({expectedOrigin,fetchOrigin=expectedOrigin,fe
   const sitemap=await sitemapResponse.text();
   assert.match(sitemap,/^<\?xml version="1\.0"/);
   const urls=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match=>match[1]);
-  assert.ok(urls.length>=400,'sitemap is missing generated endpoint pages');
+   assert.ok(urls.length>=200,'sitemap is missing generated endpoint pages');
+   assert.ok(!urls.some(url=>url.includes('/playground/')),'sitemap contains duplicate interactive endpoint pages');
   for(const url of urls)assert.equal(new URL(url).origin,expectedOrigin,`sitemap contains a noncanonical host: ${url}`);
   assert.ok(!urls.includes(expectedOrigin+'/404'));
   const llmsResponse=await fetcher(new URL('/llms.txt',fetchOrigin),{headers,signal:AbortSignal.timeout(20000)});

@@ -17,8 +17,8 @@ if(siteUrl.protocol!=='https:'||siteUrl.username||siteUrl.password||siteUrl.path
 const origin=siteUrl.origin;
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pages=[
-  ['index','/','Lodearink API | Build more. Integrate faster.',site.description],
-  ['docs','/docs','API reference | Lodearink API','Explore API endpoints, request parameters, examples and availability.'],
+  ['index','/','Lodearink API | Developer Documentation and Playground','Explore the Lodearink developer API: browse documented HTTP routes, inspect request examples, and use the interactive API playground.'],
+  ['docs','/docs','Lodearink API Reference | Browse Documented Endpoints','Browse the Lodearink API endpoint catalog. Review methods, parameters, example request URLs, and catalog status snapshots.'],
   ['playground','/playground','API playground | Lodearink API','Build requests, inspect live responses and copy client code.'],
   ['status','/status','API status | Lodearink API','Endpoint availability from timestamped checks of the live API.'],
   ['usage','/usage','API usage | Lodearink API','Shared API request volumes, response measurements and sampled activity.'],
@@ -47,16 +47,28 @@ async function image(key,model){
   return '/assets/og/'+filename;
 }
 function metadata(html,{title,description,path,image,alt}){
-  const url=origin+path;
-  const robots=path==='/404'?'noindex,follow':'index,follow,max-image-preview:large';
+  const canonicalPath=path.startsWith('/playground/')?path.replace(/^\/playground\//,'/docs/'):path;
+  const url=origin+canonicalPath;
+  const robots=path==='/404'||canonicalPath!==path?'noindex,follow':'index,follow,max-image-preview:large';
+  const brandId=origin+'/#brand';
+  const brandSchema={
+    '@context':'https://schema.org',
+    '@type':'Brand',
+    '@id':brandId,
+    name:'Lodearink',
+    alternateName:'Lodearink API',
+    url:origin+'/'
+  };
   const websiteSchema={
     '@context':'https://schema.org',
     '@type':'WebSite',
     '@id':origin+'/#website',
     name:site.name,
+    alternateName:'Lodearink developer API documentation',
     url:origin+'/',
     description:site.description,
-    inLanguage:'en'
+    inLanguage:'en',
+    about:{'@id':brandId}
   };
   const pageSchema={
     '@context':'https://schema.org',
@@ -65,15 +77,33 @@ function metadata(html,{title,description,path,image,alt}){
     description,
     url,
     inLanguage:'en',
-    isPartOf:{'@id':origin+'/#website'}
+    isPartOf:{'@id':origin+'/#website'},
+    about:{'@id':brandId}
   };
+  const schemas=[brandSchema,websiteSchema,pageSchema];
+  if(path==='/docs'){
+    const listSchema={
+      '@context':'https://schema.org',
+      '@type':'ItemList',
+      '@id':origin+'/docs#endpoint-catalog',
+      name:'Lodearink API endpoint reference',
+      numberOfItems:catalog.endpoints.length,
+      itemListElement:catalog.endpoints.map((endpoint,index)=>({
+        '@type':'ListItem',
+        position:index+1,
+        name:`${endpoint.service||endpoint.category}: ${endpoint.title||endpoint.path} (${endpoint.path})`,
+        url:origin+endpointLink('docs',endpoint.path)
+      }))
+    };
+    pageSchema.mainEntity={'@id':origin+'/docs#endpoint-catalog'};
+    schemas.push(listSchema);
+  }
   const jsonLd=value=>JSON.stringify(value).replaceAll('<','\\u003c');
   const tags=`<meta name="description" content="${escape(description)}">
 <meta name="robots" content="${robots}">
 <link rel="icon" type="image/svg+xml" href="${escape(origin+'/favicon.svg')}">
 <link rel="canonical" href="${escape(url)}">
-<script type="application/ld+json">${jsonLd(websiteSchema)}</script>
-<script type="application/ld+json">${jsonLd(pageSchema)}</script>
+${schemas.map(schema=>`<script type="application/ld+json">${jsonLd(schema)}</script>`).join('\n')}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Lodearink API">
 <meta property="og:title" content="${escape(title)}">
@@ -93,13 +123,65 @@ function metadata(html,{title,description,path,image,alt}){
     .replace(/<meta name="description"[^>]*>/g,'')
     .replace('</head>',tags+'\n</head>');
 }
+const categories=[...new Set(catalog.endpoints.map(endpoint=>endpoint.category))].sort();
+function staticHomeCategories(){
+  return categories.map(category=>{
+    const count=catalog.endpoints.filter(endpoint=>endpoint.category===category).length;
+    return `<a class="panel category-card" href="/docs?category=${escape(encodeURIComponent(category))}"><span class="category-icon" aria-hidden="true">API</span><h3>${escape(category)}</h3><p>${count} documented endpoint${count===1?'':'s'}</p></a>`;
+  }).join('');
+}
+function staticFeaturedEndpoints(){
+  const paths=['/health','/search','/npm/package','/visionai/qwen/analyze','/ytdl/info','/football/leagues'];
+  return paths.map(path=>catalog.endpoints.find(endpoint=>endpoint.path===path)).filter(Boolean).map(endpoint=>{
+    const state=endpoint.status.state.replaceAll('-',' ');
+    return `<a class="panel featured-item" href="${escape(endpointLink('docs',endpoint.path))}"><div><strong>${escape(endpoint.category)}</strong><code>${escape(endpoint.path)}</code></div><div class="featured-side"><span class="badge badge-${escape(endpoint.status.state)}">${escape(state)}</span></div></a>`;
+  }).join('');
+}
+function staticEndpointList(){
+  let previous='';
+  return catalog.endpoints.map(endpoint=>{
+    const heading=previous!==endpoint.category?`<div class="endpoint-group-label">${escape(endpoint.category)}</div>`:'';
+    previous=endpoint.category;
+    return `${heading}<a class="endpoint-row" href="${escape(endpointLink('docs',endpoint.path))}" data-path="${escape(endpoint.path)}"><span class="method">${escape(endpoint.methods.join('/')||'Method unconfirmed')}</span><code>${escape(endpoint.path)}</code><span class="mini-status ${escape(endpoint.status.state)}" aria-label="${escape(endpoint.status.state)}"></span></a>`;
+  }).join('');
+}
+function staticEndpointDetail(endpoint,checked){
+  const service=endpoint.service||endpoint.category;
+  const methods=endpoint.methods.length?endpoint.methods:[endpoint.sample.method||'GET'];
+  const examples=methods.map(method=>{
+    const sample=endpoint.methodSamples?.[method]||(method===endpoint.sample.method?endpoint.sample:null);
+    return sample?.url?`<li><span class="method">${escape(method)}</span> <code>${escape(sample.url)}</code></li>`:`<li><span class="method">${escape(method)}</span> <span>Request example not recorded.</span></li>`;
+  }).join('');
+  const rows=endpoint.parameters.length?endpoint.parameters.map(parameter=>{
+    const required=parameter.required===true?'Required':parameter.required===false?'Optional':'Not specified';
+    return `<tr><td><code>${escape(parameter.name)}</code></td><td>${escape(parameter.in)}</td><td>${required}</td><td>${escape(parameter.example||'No example recorded')}</td></tr>`;
+  }).join(''):'<tr><td colspan="4">No request parameters are documented.</td></tr>';
+  const latest=[...endpoint.evidence].reverse().find(evidence=>evidence.response)||endpoint.evidence.at(-1);
+  const recordedStatus=escape(endpoint.status.state.replaceAll('-',' '));
+  const evidence=latest?`<p>Recorded status: ${recordedStatus}. Evidence: HTTP ${escape(latest.httpStatus||'status not recorded')}${latest.contentType?` · ${escape(latest.contentType)}`:''}; checked ${escape(checked)}. This is a recorded check, not a guarantee of current availability.</p>`:`<p>Recorded status: ${recordedStatus}. No response evidence is recorded for this endpoint.</p>`;
+  return `<div data-static-reference><div class="eyebrow">Lodearink API · ${escape(endpoint.category)} · ${escape(service)}</div><h2>${escape(endpoint.title||service)} endpoint</h2><p>${escape(endpoint.description)}</p><p><strong>API base URL:</strong> <code>${escape(catalog.baseUrl)}</code></p><p><strong>Endpoint path:</strong> <code>${escape(endpoint.path)}</code></p><h3>Request methods and example URLs</h3><ul>${examples}</ul><h3>Parameters</h3><div class="table-wrap"><table class="data-table"><thead><tr><th>Name</th><th>Location</th><th>Requirement</th><th>Example</th></tr></thead><tbody>${rows}</tbody></table></div><h3>Catalog status</h3>${evidence}<p><a href="${escape(endpointLink('playground',endpoint.path))}">Open this Lodearink API endpoint in the playground</a></p></div>`;
+}
 async function pageFile(path,html){
   const target=join(OUT,path==='/'?'index.html':path.replace(/^\//,'')+'.html');
   await mkdir(dirname(target),{recursive:true});await writeFile(target,html);
 }
 const templates={};
 for(const [name,path,title,description] of pages){
-  const html=await readFile(join(ROOT,name+'.html'),'utf8');
+  let html=await readFile(join(ROOT,name+'.html'),'utf8');
+  if(name==='index'){
+    html=html.replace('<!--STATIC_CATEGORY_CARDS-->',staticHomeCategories())
+      .replace('<!--STATIC_FEATURED_ENDPOINTS-->',staticFeaturedEndpoints())
+      .replace('<!--STATIC_API_BASE_URL-->',escape(catalog.baseUrl));
+  }
+  if(name==='docs'){
+    const initialEndpoint=catalog.endpoints.find(endpoint=>endpoint.path==='/health')||catalog.endpoints[0];
+    const initialChecked=initialEndpoint.status.checkedAt?new Date(initialEndpoint.status.checkedAt).toISOString().slice(0,16).replace('T',' ')+' UTC':'Not checked';
+    html=html.replace('<!--STATIC_ENDPOINT_LIST-->',staticEndpointList())
+      .replace('<!--STATIC_ENDPOINT_DETAIL-->',staticEndpointDetail(initialEndpoint,initialChecked))
+      .replace('<!--STATIC_API_BASE_URL-->',escape(catalog.baseUrl))
+      .replace('<!--STATIC_ENDPOINT_COUNT-->',String(catalog.endpoints.length))
+      .replace('<!--STATIC_CATEGORY_COUNT-->',String(categories.length));
+  }
   templates[name]=html;
   const og=await image(name,{title:name==='index'?'Build more.\nIntegrate faster.':title.split(' | ')[0],description,path,category:'Lodearink API',count:catalog.endpoints.length});
   await pageFile(path,metadata(html,{title,description,path,image:og}));
@@ -112,12 +194,13 @@ for(const endpoint of catalog.endpoints){
   for(const page of ['docs','playground']){
     const path=endpointLink(page,endpoint.path);
     const status=endpoint.status.state.replaceAll('-',' ');
-    const title=`${endpoint.path} | ${page==='docs'?'API reference':'Playground'} | Lodearink API`;
-    const description=`${endpoint.service||endpoint.category}. ${endpoint.methods.join(' / ')||'Method unconfirmed'}. Status: ${status}, checked ${checked}. ${page==='docs'?'Request parameters and examples.':'Send a live request.'}`;
+    const service=endpoint.service||endpoint.category;
+    const title=`${endpoint.path} | ${service} | Lodearink API`;
+    const description=`Lodearink API ${endpoint.methods.join(' / ')||'HTTP'} ${endpoint.path}: ${service} endpoint. View parameters, request examples, and the catalog status snapshot.`;
     let html=metadata(templates[page],{title,description,path,image:og,alt:`${endpoint.path} · ${status} · ${checked}`});
     if(page==='docs'){
-      const intro=`<div data-static-reference><div class="eyebrow">${escape(endpoint.category)}</div><h2>${escape(endpoint.path)}</h2><p>${escape(endpoint.description)}</p><p>${escape(endpoint.methods.join(' / '))} · ${escape(status)} · Checked ${escape(checked)}</p><a href="${escape(endpointLink('playground',endpoint.path))}">Open playground</a></div>`;
-      html=html.replace(/(<section id="endpoint-detail"[^>]*>)[\s\S]*?(<\/section>)/,'$1'+intro+'$2');
+      const detail=staticEndpointDetail(endpoint,checked);
+      html=html.replace(/(<section id="endpoint-detail"[^>]*>)[\s\S]*?(<\/section>)/,'$1'+detail+'$2');
     }
     await pageFile(path,html);manifest.push({path,image:og,title,endpoint:endpoint.path,status:endpoint.status});
   }
@@ -137,12 +220,19 @@ const crawlerRules=[
   ['Claude-SearchBot']
 ].map(([agent])=>`User-agent: ${agent}\nAllow: /`).join('\n\n');
 await writeFile(join(OUT,'robots.txt'),`${crawlerRules}\n\nSitemap: ${origin}/sitemap.xml\n`);
-await writeFile(join(OUT,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+manifest.filter(p=>p.path!='/404').map(p=>`<url><loc>${escape(origin+p.path)}</loc></url>`).join('')+'</urlset>');
+await writeFile(join(OUT,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+manifest.filter(p=>p.path!='/404'&&!p.path.startsWith('/playground/')).map(p=>`<url><loc>${escape(origin+p.path)}</loc></url>`).join('')+'</urlset>');
 const markdownText=value=>String(value??'').replace(/\s+/g,' ').trim().replace(/([\\[\]])/g,'\\$1');
 const llms=[
-  '# Lodearink API',
+  '# Lodearink API documentation',
   '',
   `> ${site.description}`,
+  '',
+  '## Product identity',
+  '- Product: Lodearink API, a developer-facing HTTP API.',
+  `- Documentation and interactive playground: ${origin}/`,
+  `- API base URL: ${catalog.baseUrl}`,
+  `- The reference documents ${catalog.endpoints.length} endpoints in ${categories.length} categories.`,
+  '- Lodearink is the API name; this site is its API reference, not a logistics API or a general-purpose facts database.',
   '',
   '## Start here',
   `- [Overview](${origin}/)`,
@@ -151,6 +241,9 @@ const llms=[
   `- [Developer guides](${origin}/guides)`,
   `- [API status](${origin}/status)`,
   `- [Changelog](${origin}/changelog)`,
+  '',
+  '## API categories',
+  ...categories.map(category=>`- ${markdownText(category)}: ${catalog.endpoints.filter(endpoint=>endpoint.category===category).length} documented endpoints`),
   '',
   `## Complete endpoint index`,
   ...catalog.endpoints.map(endpoint=>`- [${markdownText(endpoint.service||endpoint.category)}: ${markdownText(endpoint.title||endpoint.path)}](${origin+endpointLink('docs',endpoint.path)}): ${markdownText(endpoint.description)}`),

@@ -70,12 +70,15 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
     const filename=page.path==='/'?'index':page.path.slice(1);
     const html=readFileSync(new URL('../dist/'+filename+'.html',import.meta.url),'utf8');
     const {meta,canonical,favicon}=sharingTags(html);
+    const canonicalPath=page.path.startsWith('/playground/')?page.path.replace(/^\/playground\//,'/docs/'):page.path;
+    const noIndex=page.path==='/404'||page.path.startsWith('/playground/');
     const schemas=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)].map(match=>JSON.parse(match[1]));
-    assert.equal(canonical,origin+page.path);
+    assert.equal(canonical,origin+canonicalPath);
     assert.equal(favicon,origin+'/favicon.svg');
-    assert.equal(meta.get('robots'),page.path==='/404'?'noindex,follow':'index,follow,max-image-preview:large');
+    assert.equal(meta.get('robots'),noIndex?'noindex,follow':'index,follow,max-image-preview:large');
     assert.ok(schemas.some(schema=>schema['@type']==='WebSite'&&schema.url===origin+'/'));
-    assert.ok(schemas.some(schema=>schema['@type']==='WebPage'&&schema.url===origin+page.path));
+    assert.ok(schemas.some(schema=>schema['@type']==='Brand'&&schema.name==='Lodearink'&&schema.alternateName==='Lodearink API'));
+    assert.ok(schemas.some(schema=>schema['@type']==='WebPage'&&schema.url===origin+canonicalPath));
     assert.equal(meta.get('og:url'),canonical);
     assert.equal(meta.get('og:image'),origin+page.image);
     assert.equal(meta.get('og:image:secure_url'),origin+page.image);
@@ -97,10 +100,28 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
     const buffer=readFileSync(png);assert.equal(buffer.toString('hex',0,8),'89504e470d0a1a0a');
     assert.equal(buffer.readUInt32BE(16),1200);assert.equal(buffer.readUInt32BE(20),630);
     if(!decoded.has(page.image)){inspectPng(buffer);decoded.add(page.image);}
-    if(page.endpoint){assert.ok(html.includes(page.endpoint));assert.ok(html.includes('Status: '+page.status.state.replaceAll('-',' ')));}
+    if(page.endpoint){
+      assert.ok(html.includes(page.endpoint));
+      if(page.path.startsWith('/docs/'))assert.ok(html.includes('Recorded status: '+page.status.state.replaceAll('-',' ')));
+      else assert.equal(meta.get('robots'),'noindex,follow');
+    }
   }
   const homeHtml=readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
   assert.match(homeHtml,/<meta name="google-site-verification" content="RPiGy8r3svoq47pjU3RvLSWPP0vpPTeb8HdwPQX0FjY">/);
+  assert.match(homeHtml,/Lodearink API<\/strong> is a developer API/);
+  assert.ok(homeHtml.includes(data.baseUrl));
+  assert.doesNotMatch(homeHtml,/Loading (?:API catalog|endpoints|categories)/i);
+  assert.equal((homeHtml.match(/class="panel category-card"/g)||[]).length,new Set(inventory.map(endpoint=>endpoint.category)).size);
+  const docsHtml=readFileSync(new URL('../dist/docs.html',import.meta.url),'utf8');
+  assert.doesNotMatch(docsHtml,/Loading endpoints|Choose an endpoint/i);
+  assert.equal((docsHtml.match(/data-path="/g)||[]).length,inventory.length);
+  const docsSchemas=[...docsHtml.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)].map(match=>JSON.parse(match[1]));
+  assert.equal(docsSchemas.find(schema=>schema['@type']==='ItemList')?.numberOfItems,inventory.length);
+  const searchPage=manifest.find(page=>page.path===endpointLink('docs','/search'));
+  const searchHtml=readFileSync(new URL('../dist/'+searchPage.path.slice(1)+'.html',import.meta.url),'utf8');
+  assert.ok(searchHtml.includes('https://api.lodearink.name.ng'));
+  assert.ok(searchHtml.includes('Ada Lovelace'));
+  assert.ok(searchHtml.includes('Parameters'));
   assert.ok(existsSync(new URL('../dist/favicon.svg',import.meta.url)));
   assert.match(readFileSync(new URL('../dist/favicon.svg',import.meta.url),'utf8'),/<svg\b/);
   assert.equal(decoded.size,inventory.length+8);
@@ -110,9 +131,10 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
   }
   const sitemap=readFileSync(new URL('../dist/sitemap.xml',import.meta.url),'utf8');
   const locations=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
-  assert.equal(locations.length,manifest.pages.length-1);
+  assert.equal(locations.length,manifest.pages.filter(page=>page.path!=='/404'&&!page.path.startsWith('/playground/')).length);
   for(const url of locations)assert.equal(new URL(url).origin,origin);
   assert.ok(!locations.includes(origin+'/404'));
+  assert.ok(!locations.some(url=>url.includes('/playground/')));
   const robots=readFileSync(new URL('../dist/robots.txt',import.meta.url),'utf8');
   assert.match(robots,/^User-agent: \*\nAllow: \/$/m);
   for(const bot of ['Googlebot','Google-Extended','Bingbot','Applebot','OAI-SearchBot','GPTBot','ChatGPT-User','PerplexityBot','ClaudeBot','Claude-SearchBot']){
@@ -120,7 +142,10 @@ test('built endpoint HTML exposes individual social metadata without JavaScript'
   }
   assert.ok(robots.includes('Sitemap: '+origin+'/sitemap.xml'));
   const llms=readFileSync(new URL('../dist/llms.txt',import.meta.url),'utf8');
-  assert.ok(llms.startsWith('# Lodearink API'));
+  assert.ok(llms.startsWith('# Lodearink API documentation'));
+  assert.ok(llms.includes('Product: Lodearink API'));
+  assert.ok(llms.includes('https://api.lodearink.name.ng'));
+  assert.ok(llms.includes(`${inventory.length} endpoints`));
   assert.ok(llms.includes(`- [API reference](${origin}/docs)`));
   assert.ok(llms.includes(`- [XML sitemap](${origin}/sitemap.xml)`));
   assert.equal(llms.split('\n').filter(line=>line.startsWith('- [')&&line.includes(`](${origin}/docs/`)).length,inventory.length);
